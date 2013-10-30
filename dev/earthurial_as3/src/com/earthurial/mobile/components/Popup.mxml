@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:BorderContainer xmlns:s="library://ns.adobe.com/flex/spark"
+		   xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   width="88" height="30" 
+		   borderStyle="solid"
+		   cornerRadius="5"
+		   backgroundColor="#F00909"
+		   backgroundAlpha="0.69"
+		   borderColor="#FAFC5A"
+		   mouseEnabled="false"
+		   mouseChildren="false"
+		   creationComplete="init()">
+	
+	<fx:Script>
+		<![CDATA[
+			public static const NORMAL:int = 0;
+			public static const LARGE:int = 1;
+			
+			public static const LEFT:int = 1;
+			public static const CENTER:int = 2;
+			public static const RIGHT:int = 3;
+		
+			[Bindable]
+			private var textValue:String;
+		
+			private var riseTimer:Timer;
+			public var container:Group;
+			
+			private var _size:int;
+			private var _alignment:int;
+			
+			private function init():void {
+				if(_size == LARGE) {
+					this.width = 200; //128;
+					labelText.width = 180; //124;
+					labelText.x = this.width / 2 - labelText.width / 2;	
+				}
+				
+				if(_alignment == CENTER) {
+					this.x = (container.width / 2) - (this.width / 2); 
+					this.y = (container.height / 2) - (this.height / 2);
+				} else if(_alignment == LEFT) {
+					this.x = 10;
+					this.y = (container.height / 2) - (this.height / 2);
+				} else if(_alignment == RIGHT) {
+					this.x = container.width - this.width - 10;
+					this.y = (container.height / 2) - (this.height / 2);
+				}
+			}
+			
+			public function set text(value:String):void {
+				textValue = value;			
+			}
+			
+			public function set size(value:int):void {
+				_size = value;
+			}
+			
+			public function set alignment(value:int):void {
+				_alignment = value;
+			}
+			
+			public function startRise():void {
+				container.addElement(this);
+				riseTimer = new Timer(50, 10);
+				riseTimer.addEventListener(TimerEvent.TIMER, doRise);
+				riseTimer.addEventListener(TimerEvent.TIMER_COMPLETE, riseComplete);
+				riseTimer.start();
+			}
+			
+			private function doRise(event:TimerEvent):void {
+				this.y -= 2;
+			}
+			
+			private function riseComplete(event:TimerEvent):void {
+				riseTimer.removeEventListener(TimerEvent.TIMER, doRise);
+				riseTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, riseComplete);
+				riseTimer.stop();
+				
+				container.removeElement(this);
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:Group>
+		<s:Label id="labelText" 
+				 x="3" y="2" 
+				 text="{textValue}" 
+				 fontWeight="bold"
+				 fontFamily="Georgia"
+				 fontSize="16"
+				 color="#FAFC5A"
+				 mouseEnabled="false"
+				 mouseChildren="false"
+				 width="81"
+				 textAlign="center"/>
+		
+	</s:Group>
+</s:BorderContainer>

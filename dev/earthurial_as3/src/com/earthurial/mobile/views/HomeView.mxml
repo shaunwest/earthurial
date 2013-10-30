@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" title="TitleView" actionBarVisible="false">
+
+	<fx:Script>
+		<![CDATA[
+			import spark.transitions.CrossFadeViewTransition;
+		]]>
+	</fx:Script>
+	
+	<s:Image source="@Embed(source='assets/interface/background.jpg')" width="100%" height="100%" scaleMode="stretch"/>
+	
+	<s:VGroup width="100%" height="100%" horizontalAlign="center" verticalAlign="middle">
+		<s:Button x="183" width="275" label="New Game" click="navigator.pushView(GameView, null, null, new CrossFadeViewTransition())"/>
+		<s:Button x="85" width="275" label="About" click="navigator.pushView(AboutView)"/>
+	</s:VGroup>
+</s:View>

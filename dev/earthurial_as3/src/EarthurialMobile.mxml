@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ViewNavigatorApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" xmlns:core="com.earthurial.mobile.core.*"
+			   applicationDPI="320" firstView="com.earthurial.mobile.views.HomeView"
+			   splashScreenImage="@Embed(source='assets/interface/title.jpg')"
+			   splashScreenMinimumDisplayTime="1000"
+			   splashScreenScaleMode="stretch"
+			   frameRate="60"
+			   >
+	<fx:Style source="EarthurialMobile.css"/>
+	<!-- 160 dpi -->
+</s:ViewNavigatorApplication>

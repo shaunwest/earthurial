@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 width="600" height="600">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.earthurial.mobile.components.Popup;
+			import com.earthurial.mobile.events.PointEvent;
+			
+			import mx.core.IVisualElement;
+			
+			[Bindable]
+			public var gameManager:GameManager;
+
+			public function initGame(savedBoard:String, parameters:Object):void {
+				var shape:Shape = new Shape();
+				shape.graphics.beginFill(0x000000);
+				shape.graphics.drawRect(0, 0, 600, 600); //256
+				shape.graphics.endFill();
+				
+				this.mask = shape;
+				
+				gameManager = new GameManager(this, savedBoard, parameters);
+				gameManager.addEventListener(PointEvent.POINT_EVENT, handlePoints);	
+			}
+	
+			private function handlePoints(event:PointEvent):void {
+				var popup:Popup = new Popup
+				popup.text = "+" + event.pointValue.toString();
+				
+				// Don't let the popup extend beyond the right border of the board
+				var x:int = event.x;
+				if(x + popup.width > this.width)
+					x = this.width - popup.width - 7;
+				
+				// Don't let the popup float beyond the top of the board
+				var y:int = event.y;
+				if(y < 23)
+					y = 23;
+				
+				popup.x = x;
+				popup.y = y;
+				popup.container = this;
+				
+				addElement(popup);
+				popup.startRise();
+			}
+			
+			public function clear():void {
+				gameManager = null;
+				removeAllElements();
+			}
+		]]>
+	</fx:Script>
+</s:Group>

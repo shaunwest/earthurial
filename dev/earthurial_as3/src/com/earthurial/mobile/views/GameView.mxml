@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" xmlns:core="com.earthurial.mobile.core.*"
+		title="GameView" actionBarVisible="false"
+		creationComplete="init()">
+	
+	<fx:Declarations>
+		<s:NumberFormatter id="numberFormatter" fractionalDigits="0"  />
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.earthurial.mobile.core.AssetManager;
+			import com.earthurial.mobile.events.BonusEvent;
+			import com.earthurial.mobile.events.GameEndEvent;
+			import com.earthurial.mobile.events.TimeEvent;
+			
+			import mx.collections.ArrayCollection;
+			[Embed(source="assets/audio/chime1.mp3")]
+			private var Chime1:Class;
+			
+			[Embed(source="assets/audio/chime2.mp3")]
+			private var Chime2:Class;
+			
+			[Embed(source="assets/audio/chime3.mp3")]
+			private var Chime3:Class;
+			
+			[Embed(source="assets/audio/chime4.mp3")]
+			private var Chime4:Class;
+			
+			[Embed(source="assets/audio/chime5.mp3")]
+			private var Chime5:Class;
+			
+			[Embed(source="assets/audio/chime6.mp3")]
+			private var Chime6:Class;
+			
+			[Embed(source="assets/audio/chime7.mp3")]
+			private var Chime7:Class;
+			
+			[Embed(source="assets/audio/chime8.mp3")]
+			private var Chime8:Class;
+			
+			[Embed(source="assets/audio/chime9.mp3")]
+			private var Chime9:Class;
+			
+			[Embed(source="assets/audio/chime10.mp3")]
+			private var Chime10:Class;
+			
+			[Embed(source="assets/audio/clear.mp3")]
+			private var ClearSound:Class;
+			
+			[Embed(source="assets/audio/fall.mp3")]
+			private var FallSound:Class;
+			
+			[Embed(source="assets/audio/fanfare.mp3")]
+			private var FanfareSound:Class;
+			
+			[Embed(source="assets/audio/flare.mp3")]
+			private var FlareSound:Class;
+			
+			[Embed(source="assets/audio/flare_clear.mp3")]
+			private var FlareClearSound:Class;
+			
+			[Embed(source="assets/audio/morph.mp3")]
+			private var MorphSound:Class;
+			
+			[Embed(source="assets/audio/tick.mp3")]
+			private var TickSound:Class;
+			
+			[Embed(source="assets/audio/time_bonus.mp3")]
+			private var TimeBonus:Class;
+			
+			[Embed(source="assets/audio/gameover.mp3")]
+			private var GameOver:Class;
+			
+			private var clock:Timer;
+			private var countdownClock:Timer;
+			private var tickSound:Sound;
+			private var timeBonusSound:Sound;
+			private var gameOverSound:Sound;
+			private var fanfareSound:Sound;
+			
+			private var gameActivated:Boolean;
+			
+			private var gotPhoenix:Boolean;
+			
+			private var tutorial:MovieClip;
+			
+			[Bindable]
+			private var challengeBoards:ArrayCollection;
+			
+			private var boardString:String;
+			private var boardChallengeId:String;
+			private var challengeMode:Boolean;
+			private var challengeScore:int;
+			private var challengeId:String;
+			private var challengeFriendUid:String;
+			private var challengeBounceBack:Boolean;
+			private var challengerDefeated:Boolean;
+			
+			private var gameParameters:Object;
+			
+			private var newUser:Boolean = false;
+			
+			[Bindable]
+			private var timeCount:int;
+			
+			[Bindable]
+			private var currentCountdown:int;
+			
+			private var leaderCount:int = 0;
+			
+			private function init():void {
+				Multitouch.inputMode = MultitouchInputMode.TOUCH_POINT;
+				
+				AssetManager.init();
+				
+				gameParameters = new Object();
+				
+				start();
+			}
+			
+			public function start():void {
+				
+				if(newUser) {
+					showTutorial();
+					newUser = false;
+					
+				} else {	
+					/*if(advancedBonusStones.selected) {
+					gameParameters.bonus_stones_off = true;
+					} else {
+					gameParameters.bonus_stones_off = false;
+					}
+					
+					if(advancedTimeBonus.selected) {
+					gameParameters.time_bonus_off = true;
+					} else {
+					gameParameters.time_bonus_off = false;
+					}
+					
+					if(advancedHalfTime.selected) {
+					gameParameters.half_time = true;
+					} else {
+					gameParameters.half_time = false;
+					}*/
+					
+					//advancedPanel.enabled = false;
+					
+					board.clear();
+					
+					gotPhoenix = false;
+					
+					//gameOverPanel.visible = false;
+					
+					tickSound = new TickSound();
+					timeBonusSound = new TimeBonus();
+					gameOverSound = new GameOver();
+					fanfareSound = new FanfareSound();
+					
+					currentCountdown = 2;
+					
+					countdownClock = new Timer(1000, currentCountdown + 1);
+					countdownClock.addEventListener(TimerEvent.TIMER, onCountdown);
+					countdownClock.addEventListener(TimerEvent.TIMER_COMPLETE, countdownComplete);
+					countdownClock.start();
+					
+					//startPanel.visible = false;
+					countdownPanel.visible = true;
+					
+					//tutorial.stop();
+					//tutorial.stage.frameRate = 30;
+					
+					tickSound.play();
+					
+					//gameActivated = false;
+					gameActivated = true;
+				}
+			}
+			
+			private function restart():void {
+				clock.removeEventListener(TimerEvent.TIMER, onTick);
+				clock.removeEventListener(TimerEvent.TIMER_COMPLETE, onTimeUp);
+				clock.stop();
+				
+				restartButton.visible = false;
+				
+				countdownPanel.visible = true;
+				//restartingLabel.visible = true;
+				countdown.visible = false;
+			}
+			
+			private function newGame():void {
+				//totalScore.setStyle("color", "#FFFFFF");
+				boardString = "";
+				boardChallengeId = "";
+				challengeMode = false;
+				challengeScore = 0;
+				challengeId = "";
+				challengeFriendUid = "";
+				challengeBounceBack = false;
+				challengerDefeated = false;
+				start();
+			}
+			
+			private function showTutorial():void {
+			}
+			
+			private function onCountdown(event:TimerEvent):void {
+				currentCountdown--;
+				if(currentCountdown > 0)
+					tickSound.play();
+			}
+			
+			private function countdownComplete(event:TimerEvent):void {
+				countdownClock.removeEventListener(TimerEvent.TIMER, onCountdown);
+				countdownClock.removeEventListener(TimerEvent.TIMER_COMPLETE, countdownComplete);
+				
+				if(gameActivated) {
+					board.initGame(boardString, gameParameters);
+					initBoard();
+					countdownPanel.visible = false;
+					restartButton.visible = true;
+				}
+			}
+			
+			private function initBoard():void {
+				board.gameManager.addChime(new Chime1());
+				board.gameManager.addChime(new Chime2());
+				board.gameManager.addChime(new Chime3());
+				board.gameManager.addChime(new Chime4());
+				board.gameManager.addChime(new Chime5());
+				board.gameManager.addChime(new Chime6());
+				board.gameManager.addChime(new Chime7());
+				board.gameManager.addChime(new Chime8());
+				board.gameManager.addChime(new Chime9());
+				board.gameManager.addChime(new Chime10());
+				
+				
+				board.gameManager.addClearSound(new ClearSound());
+				board.gameManager.addFlareClearSound(new FlareClearSound());
+				board.gameManager.addFallSound(new FallSound());
+				board.gameManager.addFlareSound(new FlareSound());
+				board.gameManager.addMorphSound(new MorphSound());
+				//board.gameManager.addEventListener(BonusEvent.BONUS_EVENT, bonusMessageHandler);
+				//board.gameManager.addEventListener(TimeEvent.TIME_EVENT, timeBonusHandler);
+				//board.gameManager.addEventListener(GameEndEvent.END_EVENT, gameEndHandler);
+				
+				/*if(advancedHalfTime.selected)
+				timeCount = 30;
+				else
+				timeCount = 60;*/
+				timeCount = 60;
+				
+				clock = new Timer(1000, timeCount);
+				clock.addEventListener(TimerEvent.TIMER, onTick);
+				clock.addEventListener(TimerEvent.TIMER_COMPLETE, onTimeUp);
+				clock.start();
+			}
+			
+			private function onTick(event:TimerEvent):void {
+				timeCount--;
+				if(timeCount <= 5)
+					tickSound.play();
+			}
+			
+			private function onTimeUp(event:TimerEvent):void {
+				//gameOverMessage.text = "Time is up!";
+				gameOverSound.play();
+				endGame();
+			}
+			
+			private function endGame():void {
+				clock.removeEventListener(TimerEvent.TIMER, onTick);
+				clock.removeEventListener(TimerEvent.TIMER_COMPLETE, onTimeUp);
+				clock.stop();
+				
+				restartButton.visible = false;			
+				
+				//finalScorePanel.visible = true;
+				
+				challengeMode = false;
+				//gameOverPanel.visible = true;
+				//advancedPanel.enabled = true;
+				
+				// Update the user's stats display
+				//statPanel.addStats(board.gameManager.stats);
+			}
+			
+		]]>
+	</fx:Script>
+	
+	
+	
+	<s:Image source="@Embed(source='assets/interface/background.jpg')" width="100%" height="100%" scaleMode="stretch"/>
+	
+	<s:VGroup horizontalAlign="center" width="100%" height="100%" paddingTop="10">
+		<s:HGroup width="94%">
+			<s:HGroup horizontalAlign="left" width="200">
+				<s:Label id="gameClock" color="#FFFFFF" fontFamily="Georgia" fontSize="70" text="{timeCount}" />
+			</s:HGroup>
+			<s:HGroup horizontalAlign="right" width="100%">
+				<s:Label id="score" color="#FFFFFF" fontFamily="Georgia" fontSize="50" text="{numberFormatter.format(board.gameManager.totalScore)}" />
+			</s:HGroup>
+		</s:HGroup>
+		
+		
+		<s:Group>
+			<!-- A black "container" for the stones -->
+			<s:Graphic>
+				<s:Rect width="604" height="604" radiusX="5" radiusY="5" alpha="0.5">
+					<s:fill>
+						<s:SolidColor color="#000000" />
+					</s:fill>
+				</s:Rect>
+			</s:Graphic>
+			
+			<core:Board x="2" y="2" id="board"
+				alpha="1.0" />
+				<!--fontFamily="Verdana" />-->
+			
+			<s:VGroup width="600" height="600" id="countdownPanel" visible="true" horizontalAlign="center" verticalAlign="middle">
+				<s:Label text="{currentCountdown}" width="133" height="93" fontSize="75" textAlign="center" fontWeight="bold" id="countdown" fontFamily="Georgia" color="#FFFFFF" />	
+				<!--<s:Label x="63.5" y="55" text="Restarting..." width="133" fontWeight="bold" color="#FFFFFF" fontSize="16" id="restartingLabel" visible="false"/>-->
+			</s:VGroup>
+		</s:Group>
+		
+		<s:HGroup width="100%" horizontalAlign="center" paddingTop="30">
+			<!--<s:Button label="Start" click="start()" />-->
+			<s:Button label="Back" click="navigator.popView()" />
+			<s:Button label="Restart Game" 
+					  id="restartButton" click="restart()" visible="false" />
+		</s:HGroup>
+		
+		
+	</s:VGroup>
+	
+</s:View>
