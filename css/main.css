@@ -7,12 +7,13 @@ button,
 input,
 select,
 textarea {
-    color: #222;
+    color: #cccccc;
 }
 
 body {
     font-size: 1em;
     line-height: 1.4;
+    background-color: black;
 }
 
 ::-moz-selection {
@@ -74,18 +75,18 @@ body {
    =================== */
 
 .header-container {
-    border-bottom: 20px solid #e44d26;
+    border-bottom: 20px solid #07251f;
 }
 
 .footer-container,
 .main aside {
-    border-top: 20px solid #e44d26;
+    border-top: 20px solid #07251f;
 }
 
 .header-container,
 .footer-container,
 .main aside {
-    background: #f16529;
+    background: #1f3f20;
 }
 
 .title {
@@ -111,7 +112,7 @@ nav a {
     font-weight: bold;
 
     color: white;
-    background: #e44d26;
+    background: #07251f;
 }
 
 nav a:hover,
@@ -157,7 +158,10 @@ nav a:hover {
    Author's custom styles
    ========================================================================== */
 
-
+.title {
+    background: url("../img/title.png") no-repeat;
+    width: 487px; height: 70px;
+}
 
 
 
@@ -216,12 +220,12 @@ nav a:hover {
     WIDE: CSS3 Effects
    ==================== */
 
-    .header-container,
+    /*.header-container,
     .main aside {
         -webkit-box-shadow: 0 5px 10px #aaa;
            -moz-box-shadow: 0 5px 10px #aaa;
                 box-shadow: 0 5px 10px #aaa;
-    }
+    }*/
 
 /* ============
     WIDE: Menu
