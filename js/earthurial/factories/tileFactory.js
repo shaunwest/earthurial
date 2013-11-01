@@ -46,7 +46,7 @@ EARTH.tileFactory = {
             type != types.superMorpher &&
             type != types.spark &&
             type != types.phoenix) {
-            return type;
+            return tile;
         }
         else {
             return this.getSimpleRandomTile();
