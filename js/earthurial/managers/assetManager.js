@@ -4,7 +4,7 @@
  */
 
 
-var assetManager = {
+EARTH.assetManager = {
     DEFAULT_TILE_WIDTH: 75,
     DEFAULT_TILE_HEIGHT: 75,
 

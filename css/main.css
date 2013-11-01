@@ -159,13 +159,19 @@ nav a:hover {
    ========================================================================== */
 
 .title {
-    background: url("../img/title.png") no-repeat;
-    width: 487px; height: 70px;
+    background: url("../img/title.png") no-repeat top left;
+    background-size: contain;
+}
+
+.no-svg .title {
+    background-image: url("../img/title.png");
 }
 
 
-
-
+#gameDisplay {
+    width: 100%; height: 500px;
+    background-color: blue;
+}
 
 
 
@@ -178,6 +184,13 @@ nav a:hover {
 /* ==========================================================================
    Media Queries
    ========================================================================== */
+@media only screen and (min-device-width : 320px) {
+    .title {
+        width: 100%;
+        height: 70px;
+    }
+}
+
 
 @media only screen and (min-width: 480px) {
 
@@ -233,6 +246,7 @@ nav a:hover {
 
     .title {
         float: left;
+        width: 487px;
     }
 
     nav {
