@@ -23,17 +23,28 @@ EARTH.tileFactory = {
         if(!tile) {
             tile = this.createTile();
         } else {
-            tile.x = 0;
-            tile.y = 0;
-            tile.type = 0;
+            this.setDefaultValues(tile);
         }
 
         return tile;
     },
 
+    setDefaultValues: function(tile) {
+        tile.x = 0;
+        tile.y = 0;
+        tile.type = 0;
+    },
+
     getSimpleRandomTile: function() {
         var tile = this.getTile();
         tile.type = Math.floor(Math.random() * 5); // this will return only a basic tile (0-4)
+
+        return tile;
+    },
+
+    getTileType: function(type) {
+        var tile = this.getTile();
+        tile.type = type;
 
         return tile;
     },
@@ -46,7 +57,7 @@ EARTH.tileFactory = {
             type != types.superMorpher &&
             type != types.spark &&
             type != types.phoenix) {
-            return tile;
+            return this.getTileType(tile.type);
         }
         else {
             return this.getSimpleRandomTile();
@@ -54,10 +65,7 @@ EARTH.tileFactory = {
     },
 
     createTile: function() {
-        var tile = Object.create(EARTH.tile);
-        this.tiles.push(tile);
-
-        return tile;
+        return Object.create(EARTH.tile);
     },
 
     freeTile: function(tile) {
