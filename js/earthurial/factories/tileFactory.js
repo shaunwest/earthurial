@@ -33,6 +33,8 @@ EARTH.tileFactory = {
         tile.x = 0;
         tile.y = 0;
         tile.type = 0;
+        tile.selected = false;
+        tile.glowing = false;
     },
 
     getSimpleRandomTile: function() {

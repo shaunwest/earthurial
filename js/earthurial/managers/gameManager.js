@@ -52,6 +52,26 @@ EARTH.gameManager = {
         this.board = board;
     },
 
+    createUpperTiles: function() {
+        var board = this.board,
+            grid = board.grid,
+            width = board.boardWidth,
+            tileFactory = this.tileFactory,
+            tile;
+
+        for(var i = 0; i < width; i++) {
+            for(var j = 7; j >= 0; j--) {
+                if(!grid[i][j]) {
+                    tile = this.getRandomTileForUpper(i, j, grid, tileFactory);
+                    tile.x = i * board.tileWidth;
+                    tile.y = j * board.tileHeight;
+
+                    grid[i][j] = tile;
+                }
+            }
+        }
+    },
+
     /*createUpperBoard: function(board) {
         var tempBoard = [],//TODO: PERF - this is going to cause some major GC
             lowerBoard = board.grid,
@@ -89,13 +109,13 @@ EARTH.gameManager = {
         }
     },
 
-    getRandomTileForUpper: function(i, j, lowerBoard, tileFactory) {
+    getRandomTileForUpper: function(i, j, board, tileFactory) {
         var tileMatch = Math.floor(Math.random() * 10); // 2 in 10 chance of copying adjacent tile
 
-        if(tileMatch == 0 && 7 - i - 1 >= 0 && lowerBoard[7 - i - 1][j])
-            return tileFactory.getValidTile(lowerBoard[7 - i - 1][j]);
-        else if(tileMatch == 1 && j - 1 >= 0 && lowerBoard[7 - i][j - 1])
-            return tileFactory.getValidTile(lowerBoard[7 - i][j - 1]);
+        if(tileMatch == 0 && 7 - i - 1 >= 0 && board[7 - i - 1][j])
+            return tileFactory.getValidTile(board[7 - i - 1][j]);
+        else if(tileMatch == 1 && j - 1 >= 0 && board[7 - i][j - 1])
+            return tileFactory.getValidTile(board[7 - i][j - 1]);
         else {
             return tileFactory.getSimpleRandomTile();
         }
@@ -149,6 +169,7 @@ EARTH.gameManager = {
             width = board.boardWidth,
             height = board.boardHeight,
             enableInput = true,
+            cascading = false,
             tile;
 
         for(var i = 0; i < width; i++) {
@@ -167,12 +188,21 @@ EARTH.gameManager = {
                     if(Math.floor(tile.y / board.tileHeight) != j) {
                         tile.y += 5;
                         enableInput = false;
+                        cascading = true;
                     }
                 }
             }
         }
 
         this.inputManager.enableInput(enableInput);
+
+        // See if cascading is done. If it is, fill in
+        // the upper board.
+        if(this.isCascading && cascading == false) {
+            this.isCascading = false;
+
+            this.createUpperTiles();
+        }
     },
 
     doTileSelect: function(tile) {
@@ -292,6 +322,8 @@ EARTH.gameManager = {
             score = this.score;
 
         if((board.selectedTiles.length == board.selectCount && board.selectCount >= board.SELECTION_LENGTH) || board.selectCount > 2) {
+            this.isCascading = true;
+
             this.destroyTiles(board.selectedTiles);
             ///dispatchPointEvent(true);
             ///bank();
@@ -331,7 +363,6 @@ EARTH.gameManager = {
             //}
         }
 
-        // TODO: what is this for?
         for(var i = 0; i < tileSet.length; i++) {
             tile = tileSet[i];
             tile.glowing = true;
@@ -347,6 +378,7 @@ EARTH.gameManager = {
 
     removeTiles: function() {
         var board = this.board,
+            tileFactory = this.tileFactory,
             tileSet = this.tileSet,
             tileWasRemoved = false,
             tile;
@@ -369,7 +401,12 @@ EARTH.gameManager = {
             //    this.boardContainer.removeElement(tile);
                 tileWasRemoved = true;
             //}
+
+            // Remove the tile from the board
             board.removeTile(tile);
+
+            // Free the tile for later use
+            tileFactory.freeTile(tile);
         }
 
         if(!this.disableClearBonus) {
@@ -386,6 +423,7 @@ EARTH.gameManager = {
 
         tileSet.length = 0;
     },
+
 
     /*startCascade: function() {
         var newBoardCounts = [], newBoard = [],
