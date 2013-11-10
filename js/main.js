@@ -44,7 +44,7 @@ $(document).ready(function() {
     );
 
     function update() {
-        $debug.html(score.debug() + board.debug());
+        $debug.html(score.debug() + board.debug() + inputManager.debug());
         gameManager.update();
     }
 });

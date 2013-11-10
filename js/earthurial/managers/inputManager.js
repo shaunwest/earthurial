@@ -29,6 +29,8 @@ EARTH.inputManager = {
     },
 
     addListeners: function($inputRegion) {
+        this.up = true;
+
         $inputRegion = $inputRegion || this.$inputRegion;
 
         $inputRegion.on(this.inputStart, $.proxy(this.onInputDown, this));
@@ -62,5 +64,10 @@ EARTH.inputManager = {
 
     update: function() {
         this.startSelecting = false;
+    },
+
+    debug: function() {
+        return "input on: " + this.inputEnabled + "<br>" +
+            "up: " + this.up + "<br>";
     }
 };

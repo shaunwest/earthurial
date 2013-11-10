@@ -23,12 +23,12 @@ EARTH.gameManager = {
     createBoard: function(board, savedBoard) {
         var tempBoardString = "",
             tileFactory = this.tileFactory,
-            lowerBoard = board.lower,
+            grid = board.grid,
             width = board.boardWidth, height = board.boardHeight,
             tile, pos;
 
         for (var i = 0; i < width; i++) {
-            lowerBoard[i] = [];
+            grid[i] = [];
 
             for (var j = 0; j < height; j++) {
                 if(savedBoard) {
@@ -36,27 +36,25 @@ EARTH.gameManager = {
                     pos = j + (i * width);
                     tile.type = parseInt(savedBoard.substr(pos, 1));
                 } else {
-                    tile = this.getRandomTile(i, j, lowerBoard, tileFactory);
+                    tile = this.getRandomTile(i, j, grid, tileFactory);
                     tempBoardString += tile.type.toString();
                 }
 
                 tile.x = i * board.tileWidth;
                 tile.y = j * board.tileHeight;
 
-                lowerBoard[i][j] = tile;
+                grid[i][j] = tile;
             }
         }
 
         board.string = tempBoardString;
 
         this.board = board;
-
-        this.createUpperBoard(board);
     },
 
-    createUpperBoard: function(board) {
+    /*createUpperBoard: function(board) {
         var tempBoard = [],//TODO: PERF - this is going to cause some major GC
-            lowerBoard = board.lower,
+            lowerBoard = board.grid,
             upperBoard = board.upper,
             tileFactory = this.tileFactory,
             width = board.boardWidth, height = board.boardHeight,
@@ -77,7 +75,7 @@ EARTH.gameManager = {
         }
 
         board.upper = tempBoard;
-    },
+    },*/
 
     getRandomTile: function(i, j, board, tileFactory) {
         var tileMatch = Math.floor(Math.random() * 40); // 2 in 40 chance of copying adjacent tile
@@ -141,12 +139,40 @@ EARTH.gameManager = {
             }
         }
 
-        if(this.isCascading) {
-            this.cascadeTiles(board.upper);
-            this.cascadeTiles(board.lower);
+        this.updateTiles();
+        inputManager.update();
+    },
+
+    updateTiles: function() {
+        var board = this.board,
+            grid = board.grid,
+            width = board.boardWidth,
+            height = board.boardHeight,
+            enableInput = true,
+            tile;
+
+        for(var i = 0; i < width; i++) {
+            for(var j = 0; j < height; j++) {
+                tile = grid[i][j];
+                if(tile) {
+                    // If there's an empty space below the tile,
+                    // set the tile to that new space
+                    if(board.isEmpty(i, j + 1)) {
+                        grid[i][j] = null;
+                        grid[i][j + 1] = tile;
+                    }
+
+                    // If the tile's py doesn't match it's grid position,
+                    // cause the tile to fall
+                    if(Math.floor(tile.y / board.tileHeight) != j) {
+                        tile.y += 5;
+                        enableInput = false;
+                    }
+                }
+            }
         }
 
-        inputManager.update();
+        this.inputManager.enableInput(enableInput);
     },
 
     doTileSelect: function(tile) {
@@ -242,35 +268,6 @@ EARTH.gameManager = {
                 }
             }
         }
-    },
-
-    cascadeTiles: function(grid) {
-        var board = this.board,
-            width = board.boardWidth,
-            height = board.boardHeight,
-            cascading = false,
-            tile;
-
-        for(var i = 0; i < width; i++) {
-            for(var j = 0; j < height; j++) {
-                tile = grid[i][j];
-                if(tile.falling) {
-                    if(board.isEmpty(grid, i, j + 1)) {
-                        if(j * board.tileHeight == j + 1) {
-                            tile.falling = false;
-                            grid[i][j] = null;
-                            grid[i][j + 1] = tile;
-
-                        } else {
-                            tile.y++;
-                            cascading = true;
-                        }
-                    }
-                }
-            }
-        }
-
-        this.isCascading = cascading;
     },
 
     endPath: function() {
@@ -381,23 +378,19 @@ EARTH.gameManager = {
 
         ///resetColorsUsed();
 
-        if(tileWasRemoved) {
+        /*if(tileWasRemoved) {
             this.startCascade();
         } else {
             this.inputManager.enableInput(true);
-        }
+        }*/
 
         tileSet.length = 0;
-    },
-
-    startCascade: function() {
-
     },
 
     /*startCascade: function() {
         var newBoardCounts = [], newBoard = [],
             board = this.board,
-            lower = board.lower, upper = board.upper,
+            grid = board.grid, upper = board.upper,
             width = board.boardWidth, height = board.boardHeight;
 
         this.isCascading = true;
@@ -408,15 +401,15 @@ EARTH.gameManager = {
             for(var j = 0; j < height; j++) {
                 var emptyCount = 0;
                 for(var k = j + 1; k < height; k++) {
-                    if(lower[i][k] == null) {
+                    if(grid[i][k] == null) {
                         emptyCount++;
                     }
                 }
 
-                if(lower[i][j] != null) {
-                    ///lower[i][j].startCascade(emptyCount);
-                    lower[i][j].falling = true;
-                    newBoard[i][j + emptyCount] = lower[i][j];
+                if(grid[i][j] != null) {
+                    ///grid[i][j].startCascade(emptyCount);
+                    grid[i][j].falling = true;
+                    newBoard[i][j + emptyCount] = grid[i][j];
                 } else {
                     emptyCount++;
                 }
@@ -438,7 +431,7 @@ EARTH.gameManager = {
             }
         }
 
-        this.board.lower = newBoard;
+        this.board.grid = newBoard;
         this.createUpperBoard(this.board);
 
         ///fallSound.play();

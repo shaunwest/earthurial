@@ -8,7 +8,7 @@ var EARTH = EARTH || {};
 EARTH.config = {
     targetFps: 60,
     boardWidth: 8,
-    boardHeight: 8,
+    boardHeight: 16,
     tileWidth: 75,
     tileHeight: 75
 };

@@ -223,7 +223,7 @@ nav a:hover {
     #gameContainer,
     #gameDisplay {
         width: 320px;
-        height: 320px;
+        height: 640px;
     }
 
     nav {
@@ -260,7 +260,7 @@ nav a:hover {
     #gameContainer,
     #gameDisplay {
         width: 480px;
-        height: 480px;
+        height: 960px;
     }
 
 /* ========================
@@ -335,7 +335,7 @@ nav a:hover {
     #gameContainer,
     #gameDisplay {
         width: 600px;
-        height: 600px;
+        height: 1200px;
     }
 }
 

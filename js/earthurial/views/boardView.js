@@ -13,9 +13,9 @@ EARTH.boardView = {
 
     // TODO: only areas that have changed should be redrawn?
     draw: function() {
-        var lowerBoard = this.board.lower,
-            width = lowerBoard.length,
-            height = lowerBoard[0].length,
+        var grid = this.board.grid,
+            width = this.board.boardWidth,
+            height = this.board.boardHeight,
             canvas = this.canvas,
             context = canvas.getContext('2d'),
             tileSheet = this.tileSheet,
@@ -24,8 +24,8 @@ EARTH.boardView = {
         context.clearRect(0, 0, canvas.width, canvas.height);
 
         for(var i = 0; i < width; i++) {
-            for(var j = 0; j < height; j++) {
-                tile = lowerBoard[i][j];
+            for(var j = 8; j < height; j++) {
+                tile = grid[i][j];
                 if(tile) {
                     this.drawTile(tile, tileSheet, context);
                 }

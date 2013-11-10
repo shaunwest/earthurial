@@ -5,12 +5,13 @@
 
 EARTH.board = {
     SELECTION_LENGTH: 2,
+    DEFAULT_WIDTH: 8,
+    DEFAULT_HEIGHT: 16,
 
-    lower: [],
-    upper: [],
+    grid: [],
     string: "",
-    boardWidth: 8,
-    boardHeight: 8,
+    boardWidth: this.DEFAULT_WIDTH,
+    boardHeight: this.DEFAULT_HEIGHT,
     tileWidth: 75,
     tileHeight: 75,
     selectedTile: null,
@@ -23,18 +24,18 @@ EARTH.board = {
         var bx = Math.floor(px / this.tileWidth),
             by = Math.floor(py / this.tileHeight);
 
-        return this.lower[bx][by];
+        return this.grid[bx][by];
     },
 
     removeTile: function(tile) {
         var bx = Math.floor(tile.x / this.tileWidth),
             by = Math.floor(tile.y / this.tileHeight);
 
-        this.lower[bx][by] = null;
+        this.grid[bx][by] = null;
     },
 
     isAdjacentToTile: function(tile, adjacentTile) {
-        var board = this.lower,
+        var board = this.grid,
             bx = Math.floor(tile.x / this.tileWidth),
             by = Math.floor(tile.y / this.tileHeight);
 
@@ -53,8 +54,8 @@ EARTH.board = {
         return false;
     },
 
-    isEmpty: function(board, bx, by) {
-        if(bx >= 0 && bx < this.boardWidth && by >= 0 && by < this.boardHeight && board[bx][by] == null) {
+    isEmpty: function(bx, by) {
+        if(bx >= 0 && bx < this.boardWidth && by >= 0 && by < this.boardHeight && this.grid[bx][by] == null) {
             return true;
         }
         return false;
