@@ -220,8 +220,13 @@ nav a:hover {
         margin: 0;
     }
 
-    #gameContainer,
+    #gameContainer {
+        width: 320px;
+        height: 320px;
+    }
+
     #gameDisplay {
+        top: -320px;
         width: 320px;
         height: 640px;
     }
@@ -257,8 +262,13 @@ nav a:hover {
 /* ====================
     INTERMEDIATE: Game
    ==================== */
-    #gameContainer,
+    #gameContainer {
+        width: 480px;
+        height: 480px;
+    }
+
     #gameDisplay {
+        top: -480px;
         width: 480px;
         height: 960px;
     }
@@ -332,11 +342,17 @@ nav a:hover {
     /* ====================
     INTERMEDIATE: Game
    ==================== */
-    #gameContainer,
+    #gameContainer {
+        width: 600px;
+        height: 600px;
+    }
+
     #gameDisplay {
+        top: -600px;
         width: 600px;
         height: 1200px;
     }
+
 }
 
 @media only screen and (min-width: 1140px) {

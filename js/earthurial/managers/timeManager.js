@@ -7,6 +7,7 @@
 EARTH.timeManager = {
     ONE_SECOND: 1000,
     MINIMUM_FRAME_LENGTH: 0.048,
+    TIMER_START: 61,
 
     init: function(targetFps, updateFunc, drawFunc) {
         this.targetFps      = targetFps;
@@ -18,6 +19,7 @@ EARTH.timeManager = {
         this.frameCount     = 1;
         this.maxFrameCount  = 30;
         this.elapsedTotal   = 0;
+        this.timerCount     = this.TIMER_START;
         this.lastUpdateTime = new Date();
         this.averageElapsed = 0;
         this.elapsedSeconds = 0;
@@ -61,6 +63,7 @@ EARTH.timeManager = {
                 this.MINIMUM_FRAME_LENGTH
             );
 
+        this.timerCount -= secondsElapsed;
         this.lastUpdateTime = now;
 
         secondsElapsed = this.getAverageElapsed(secondsElapsed);

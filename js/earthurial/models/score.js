@@ -9,6 +9,7 @@ EARTH.score = {
     TILE_VALUE: 100,
     TILE_VALUE_LIMIT: 600,
 
+    totalScore: 0,
     tileValue: 0,
     tempPoints: 0,
     pointMultiplier: 1,
@@ -27,6 +28,11 @@ EARTH.score = {
         loseCount: 0
     },
 
+    bank: function() {
+        this.totalScore += this.tempPoints;
+        this.tempPoints = 0;
+    },
+
     // record the numbers of each type used
     recordType: function(type) {
     },
@@ -36,7 +42,8 @@ EARTH.score = {
     },
 
     debug: function() {
-        return  "Tile Value: " + this.tileValue + "<br>" +
+        return  "Score: " + this.totalScore + "<br>" +
+                "Tile Value: " + this.tileValue + "<br>" +
                 "Points: " + this.tempPoints + "<br>" +
                 "Multiplier: " + this.pointMultiplier + "<br>";
     }

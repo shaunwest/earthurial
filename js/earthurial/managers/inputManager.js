@@ -54,7 +54,7 @@ EARTH.inputManager = {
         }
 
         this.inputLocation.x = pageX - this.$inputContainer.offset().left;
-        this.inputLocation.y = pageY - this.$inputContainer.offset().top;
+        this.inputLocation.y = (pageY - (this.$inputContainer.offset().top)) + 600;
     },
 
     onInputUp: function(event) {

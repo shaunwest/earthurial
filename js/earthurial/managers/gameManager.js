@@ -159,7 +159,7 @@ EARTH.gameManager = {
             }
         }
 
-        this.updateTiles();
+        this.updateTiles(secondsElapsed);
         inputManager.update();
     },
 
@@ -186,7 +186,7 @@ EARTH.gameManager = {
                     // If the tile's py doesn't match it's grid position,
                     // cause the tile to fall
                     if(Math.floor(tile.y / board.tileHeight) != j) {
-                        tile.y += 5;
+                        tile.y += 15;
                         enableInput = false;
                         cascading = true;
                     }
@@ -326,7 +326,7 @@ EARTH.gameManager = {
 
             this.destroyTiles(board.selectedTiles);
             ///dispatchPointEvent(true);
-            ///bank();
+            score.bank();
             score.stats.clearCount += board.selectedTiles.length;
 
             //for each(var color:String in Tile1.colors) {
