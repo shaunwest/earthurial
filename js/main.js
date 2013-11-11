@@ -25,7 +25,7 @@ $(document).ready(function() {
             inputManager.init($canvas);
 
             // Controls every aspect of the core gameplay
-            gameManager.init(inputManager, score, tileFactory);
+            gameManager.init(inputManager, score, tileFactory, config.fallSpeed);
             gameManager.createBoard(board, null);
 
             // The visible board
@@ -43,9 +43,9 @@ $(document).ready(function() {
         }
     );
 
-    function update() {
+    function update(secondsElapsed) {
         $debug.html(Math.floor(timeManager.timerCount) + "<br>" + score.debug() + board.debug() + inputManager.debug());
-        gameManager.update();
+        gameManager.update(secondsElapsed);
     }
 });
 

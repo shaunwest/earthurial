@@ -13,10 +13,11 @@ EARTH.gameManager = {
     disableClearBonus: false,
     tileSet: null,
 
-    init: function(inputManager, score, tileFactory) {
+    init: function(inputManager, score, tileFactory, fallSpeed) {
         this.inputManager = inputManager;
         this.score = score;
         this.tileFactory = tileFactory;
+        this.fallSpeed = fallSpeed;
         this.isCascading = false;
     },
 
@@ -163,30 +164,36 @@ EARTH.gameManager = {
         inputManager.update();
     },
 
-    updateTiles: function() {
+    updateTiles: function(secondsElapsed) {
         var board = this.board,
             grid = board.grid,
             width = board.boardWidth,
             height = board.boardHeight,
             enableInput = true,
             cascading = false,
-            tile;
+            fallSpeed = Math.floor(this.fallSpeed * secondsElapsed),
+            tile, gridColumn,
+            jPlusOne, jPlusTwo;
 
         for(var i = 0; i < width; i++) {
-            for(var j = 0; j < height; j++) {
-                tile = grid[i][j];
+            gridColumn = grid[i];
+
+            for(var j = height - 1; j >= 0; j--) {
+                tile = gridColumn[j];
                 if(tile) {
+                    jPlusOne = j + 1;
+                    jPlusTwo = j + 2;
                     // If there's an empty space below the tile,
                     // set the tile to that new space
-                    if(board.isEmpty(i, j + 1)) {
-                        grid[i][j] = null;
-                        grid[i][j + 1] = tile;
+                    if(board.isWithinBounds(i, jPlusOne) && gridColumn[jPlusOne] == null) {
+                        gridColumn[j] = null;
+                        gridColumn[j + 1] = tile;
                     }
 
                     // If the tile's py doesn't match it's grid position,
                     // cause the tile to fall
                     if(Math.floor(tile.y / board.tileHeight) != j) {
-                        tile.y += 15;
+                        tile.y += Math.min(fallSpeed, (board.tileHeight * j) - tile.y);
                         enableInput = false;
                         cascading = true;
                     }

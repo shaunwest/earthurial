@@ -61,6 +61,13 @@ EARTH.board = {
         return false;
     },
 
+    isWithinBounds: function(bx, by) {
+        if(bx >= 0 && bx < this.boardWidth && by >= 0 && by < this.boardHeight) {
+            return true;
+        }
+        return false;
+    },
+
     debug: function() {
         return "Select count: " + this.selectedTiles.length + "<br>";
     }

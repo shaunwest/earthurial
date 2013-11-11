@@ -10,5 +10,6 @@ EARTH.config = {
     boardWidth: 8,
     boardHeight: 16,
     tileWidth: 75,
-    tileHeight: 75
+    tileHeight: 75,
+    fallSpeed: 937 //~15
 };
