@@ -4,17 +4,21 @@
  */
 
 EARTH.inputManager = {
-    init: function($inputRegion) {
+    DEFAULT_TOP_OFFSET: 600,
+
+    init: function($inputRegion, mode) {
         this.$inputRegion   = $inputRegion;
         this.$inputContainer= $inputRegion.parent();
-        this.up             = true;
-        this.selecting      = false;
+        this.down           = false;
         this.startSelecting = false;
+        this.selecting      = false;
         this.endSelecting   = false;
         this.inputLocation  = {x: 0, y: 0};
         this.inputEnabled   = true;
-        this.inputStart     = "mousedown"; //"touchstart"
-        this.inputEnd       = "mouseup"; //"touchend"
+        //this.inputStart     = (mode == "touch") ? "touchstart" : "mousedown"; //"touchstart"
+        //this.inputEnd       = (mode == "touch") ? "touchend" : "mouseup"; //"touchend"
+        //this.inputMove      = (mode == "touch") ? "touchmove" : "mousemove"; //"touchmove"??
+        this.topOffset      = this.DEFAULT_TOP_OFFSET;
 
         this.addListeners();
     },
@@ -29,17 +33,20 @@ EARTH.inputManager = {
     },
 
     addListeners: function($inputRegion) {
-        this.up = true;
+        this.down = false;
+        this.selecting = false;
 
         $inputRegion = $inputRegion || this.$inputRegion;
 
-        $inputRegion.on(this.inputStart, $.proxy(this.onInputDown, this));
-        $inputRegion.on(this.inputEnd, $.proxy(this.onInputUp, this));
+        $inputRegion.on("touchstart mousedown", $.proxy(this.onInputDown, this));
+        $inputRegion.on("touchmove mousemove", $.proxy(this.onInputMove, this));
+        $("body").on("touchend mouseup", $.proxy(this.onInputUp, this));
     },
 
     removeListeners: function($inputRegion) {
         $inputRegion = $inputRegion || this.$inputRegion;
         $inputRegion.off();
+        $("body").off();
     },
 
     // FIXME: seems to have issues when the board scales down
@@ -48,26 +55,49 @@ EARTH.inputManager = {
             pageX = (touch) ? touch.pageX : event.pageX,
             pageY = (touch) ? touch.pageY : event.pageY;
 
-        if(this.up) {
+        if(!this.down) {
             this.startSelecting = true;
-            this.up = false;
+            this.down = true;
+            EARTH.log("DOWN");
         }
 
         this.inputLocation.x = pageX - this.$inputContainer.offset().left;
-        this.inputLocation.y = (pageY - (this.$inputContainer.offset().top)) + 600;
+        this.inputLocation.y = (pageY - (this.$inputContainer.offset().top)) + this.topOffset;
+
+        event.preventDefault();
+    },
+
+    onInputMove: function(event) {
+        var touch = (event.originalEvent && event.originalEvent.touches) ? event.originalEvent.touches[0] : null,
+            pageX = (touch) ? touch.pageX : event.pageX,
+            pageY = (touch) ? touch.pageY : event.pageY;
+
+        if(this.down) {
+            this.selecting = true;
+            this.inputLocation.x = pageX - this.$inputContainer.offset().left;
+            this.inputLocation.y = (pageY - (this.$inputContainer.offset().top)) + this.topOffset;
+        }
+
+        event.preventDefault();
     },
 
     onInputUp: function(event) {
-        this.up = true;
-        this.endSelecting = true;
+        this.down = false;
+        if(this.selecting) {
+            this.selecting = false;
+            this.endSelecting = true;
+            EARTH.log("UP");
+        }
     },
 
     update: function() {
         this.startSelecting = false;
+        this.endSelecting = false;
     },
 
     debug: function() {
         return "input on: " + this.inputEnabled + "<br>" +
-            "up: " + this.up + "<br>";
+            "input loc x: " + this.inputLocation.x + ", " + this.inputLocation.y + "<br>" +
+            "down: " + this.down + "<br>";
     }
 };

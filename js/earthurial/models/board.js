@@ -24,7 +24,10 @@ EARTH.board = {
         var bx = Math.floor(px / this.tileWidth),
             by = Math.floor(py / this.tileHeight);
 
-        return this.grid[bx][by];
+        if(bx < this.boardWidth && by < this.boardHeight) {
+            return this.grid[bx][by];
+        }
+        return null;
     },
 
     removeTile: function(tile) {

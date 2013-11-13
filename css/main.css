@@ -171,8 +171,6 @@ nav a:hover {
 #gameContainer {
     margin: 0 auto;
     position: relative;
-    /*width: 600px;
-    height: 600px;*/
     overflow: hidden;
 }
 
@@ -189,11 +187,8 @@ nav a:hover {
 
 #gameDisplay {
     background-color: blue;
+    cursor: pointer;
 }
-
-
-
-
 
 
 

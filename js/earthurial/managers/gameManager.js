@@ -7,8 +7,6 @@ EARTH.gameManager = {
     inputManager: null,
     board: null,
     score: null,
-    initTrace: false,
-    isTracing: false,
     currentDirection: 0,
     disableClearBonus: false,
     tileSet: null,
@@ -123,14 +121,31 @@ EARTH.gameManager = {
     },
 
     update: function(secondsElapsed) {
-        var inputManager = this.inputManager,
-            board = this.board,
-            score = this.score,
-            px = inputManager.inputLocation.x,
-            py = inputManager.inputLocation.y,
-            tile = board.getTileByPxLocation(px, py);
+        var inputManager = this.inputManager;
 
         if(inputManager.startSelecting) {
+            this.startSelection(inputManager.inputLocation);
+
+        } else if(inputManager.selecting) {
+            this.doSelection(inputManager.inputLocation);
+
+        } else if(inputManager.endSelecting) {
+            this.endPath();
+        }
+
+        this.updateTiles(secondsElapsed);
+
+        inputManager.update();
+    },
+
+    startSelection: function(inputLocation) {
+        var board = this.board,
+            score = this.score,
+            px = inputLocation.x,
+            py = inputLocation.y,
+            tile = board.getTileByPxLocation(px, py);
+
+        if(tile) {
             if(board.selectedTile) {
                 if(board.selectedTile === tile) {
                     this.endPath();
@@ -154,14 +169,20 @@ EARTH.gameManager = {
                 score.recordType(board.selectedTile.type);
                 board.currentType = tile.type;
 
-                this.initTrace = true; // was initMouseDrag
-
                 ///playNextChime();
             }
         }
+    },
 
-        this.updateTiles(secondsElapsed);
-        inputManager.update();
+    doSelection: function(inputLocation) {
+        var board = this.board,
+            px = inputLocation.x,
+            py = inputLocation.y,
+            tile = board.getTileByPxLocation(px, py);
+
+        if(tile) {
+            this.doTileSelect(tile);
+        }
     },
 
     updateTiles: function(secondsElapsed) {
@@ -305,6 +326,7 @@ EARTH.gameManager = {
                 }
             }
         }
+        EARTH.log("DO TILE SELECT");
     },
 
     endPath: function() {
@@ -491,9 +513,6 @@ EARTH.gameManager = {
     resetValues: function() {
         var board = this.board,
             score = this.score;
-
-        this.isTracing = false;
-        this.initTrace = false;
 
         board.selectCount = 0;
         board.totalCount = 0;

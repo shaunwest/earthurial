@@ -22,7 +22,8 @@ $(document).ready(function() {
     assetManager.loadTileSheet("gameTiles", "img/tiles.png", board.tileWidth, board.tileHeight,
         function() {
             // Handles mouse, touch, and keyboard interactions from the user
-            inputManager.init($canvas);
+
+            inputManager.init($canvas, "touch");
 
             // Controls every aspect of the core gameplay
             gameManager.init(inputManager, score, tileFactory, config.fallSpeed);
