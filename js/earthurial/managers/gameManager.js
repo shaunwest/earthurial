@@ -7,13 +7,15 @@ EARTH.gameManager = {
     inputManager: null,
     board: null,
     score: null,
+    sounds: null,
     currentDirection: 0,
     disableClearBonus: false,
     tileSet: null,
 
-    init: function(inputManager, score, tileFactory, fallSpeed) {
+    init: function(inputManager, score, tileFactory, fallSpeed, audioManager) {
         this.inputManager = inputManager;
         this.score = score;
+        this.audioManager = audioManager;
         this.tileFactory = tileFactory;
         this.fallSpeed = fallSpeed;
         this.isCascading = false;
@@ -169,7 +171,7 @@ EARTH.gameManager = {
                 score.recordType(board.selectedTile.type);
                 board.currentType = tile.type;
 
-                ///playNextChime();
+                this.audioManager.playNextChime();
             }
         }
     },
@@ -269,7 +271,7 @@ EARTH.gameManager = {
                         }
 
                     }
-                    ///playPreviousChime();
+                    this.audioManager.playPreviousChime();
                 }
 
                 // Figure out new selectCount
@@ -302,7 +304,9 @@ EARTH.gameManager = {
                         board.selectedTile = tile;
 
                         score.pointMultiplier++;
-                        ///playNextChime();
+
+                        this.audioManager.playNextChime();
+
                     } else {
                         return;
                     }
@@ -315,7 +319,8 @@ EARTH.gameManager = {
                     board.selectCount++;
                     board.totalCount++;
                     board.selectedTile = tile;
-                    ///playNextChime();
+
+                    this.audioManager.playNextChime();
                 }
 
                 if(selectedTiles.length > 2) {
@@ -522,7 +527,7 @@ EARTH.gameManager = {
         score.pointMultiplier = 0;
         this.disableClearBonus = false;
 
-        /// resetChime();
+        this.audioManager.resetChime();
     }
 };
 

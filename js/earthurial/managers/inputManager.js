@@ -58,7 +58,6 @@ EARTH.inputManager = {
         if(!this.down) {
             this.startSelecting = true;
             this.down = true;
-            EARTH.log("DOWN");
         }
 
         this.inputLocation.x = pageX - this.$inputContainer.offset().left;
@@ -86,7 +85,6 @@ EARTH.inputManager = {
         if(this.selecting) {
             this.selecting = false;
             this.endSelecting = true;
-            EARTH.log("UP");
         }
     },
 
