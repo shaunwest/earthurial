@@ -48,13 +48,14 @@ $(document).ready(function() {
             model: sounds,
             assets: [
                 {
-                    id: "chimes",
-                    paths: [
+                    id: "gameSfx",
+                    path: "audio/gameSfx.mp3"
+                    /*paths: [
                         "audio/chime1.mp3", "audio/chime2.mp3", "audio/chime3.mp3",
                         "audio/chime4.mp3", "audio/chime5.mp3", "audio/chime6.mp3",
                         "audio/chime7.mp3", "audio/chime8.mp3", "audio/chime9.mp3",
                         "audio/chime10.mp3"
-                    ]
+                    ]*/
                 }
             ]
         }
@@ -63,28 +64,28 @@ $(document).ready(function() {
     // When assets are ready, initialize everything and start the game
     assetManager.onReady(
         function() {
-            // Handles mouse, touch, and keyboard interactions from the user
-            inputManager.init($canvas, "touch");
-
             // Handles sfx
-            audioManager.init(sounds);
+            audioManager.init(sounds, function() {
+                // Handles mouse, touch, and keyboard interactions from the user
+                inputManager.init($canvas, "touch");
 
-            // Controls every aspect of the core game play
-            gameManager.init(inputManager, score, tileFactory, config.fallSpeed, audioManager);
-            gameManager.createBoard(board, null);
+                // Controls every aspect of the core game play
+                gameManager.init(inputManager, score, tileFactory, config.fallSpeed, audioManager);
+                gameManager.createBoard(board, null);
 
-            // The visible board
-            boardView.init(canvas, board, tileSheets.tileSheets["gameTiles"]);
+                // The visible board
+                boardView.init(canvas, board, tileSheets.tileSheets["gameTiles"]);
 
-            // Manages the main game loop
-            timeManager.init(
-                config.targetFps,
-                update,
-                $.proxy(boardView.draw, boardView)
-            );
+                // Manages the main game loop
+                timeManager.init(
+                    config.targetFps,
+                    update,
+                    $.proxy(boardView.draw, boardView)
+                );
 
-            timeManager.$reportFps = $fps;
-            timeManager.start();
+                timeManager.$reportFps = $fps;
+                timeManager.start();
+            });
         }
     );
 

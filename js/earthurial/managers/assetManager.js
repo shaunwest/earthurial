@@ -61,7 +61,7 @@ EARTH.assetManager = {
     loadSound: function(id, path, index) {
         var soundAsset = new Audio();
 
-        soundAsset.addEventListener(
+        /*soundAsset.addEventListener(
             "canplaythrough",
             $.proxy(function() {
                 if(typeof index !== "undefined") {
@@ -72,7 +72,7 @@ EARTH.assetManager = {
                 this.assetReady();
             }, this),
             true
-        );
+        );*/
 
         soundAsset.addEventListener(
             "error",
@@ -94,13 +94,21 @@ EARTH.assetManager = {
                         EARTH.log('An unknown error occurred.');
                         break;
                 }
-                alert("ERROR");
+                alert("Audio load error!");
                 EARTH.log("assetManager: asset load aborted");
             }),
             true
         );
 
+        // DEBUG
         soundAsset.src = path;
+
+        if(typeof index !== "undefined") {
+            this.soundsModel.addSoundToGroup(id, index, soundAsset);
+        } else {
+            this.soundsModel.addSound(id, soundAsset);
+        }
+        this.assetReady();
     },
 
     loadTileSheets: function(tileSheets) {

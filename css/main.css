@@ -190,7 +190,10 @@ nav a:hover {
     cursor: pointer;
 }
 
-
+#enableAudioButton {
+    width: 100px;
+    height: 20px;
+}
 
 
 

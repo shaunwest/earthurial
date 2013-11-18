@@ -5,46 +5,82 @@
 
 
 EARTH.audioManager = {
-    init: function(sounds) {
+    init: function(sounds, ready) {
         this.currentChime   = -1;
         this.sounds         = sounds;
-        this.chimes         = sounds.sounds["chimes"];
+        this.gameSfx        = sounds.sounds["gameSfx"];
+        this.chimes      = [
+            {start: 0.0,    end: 0.65}, //.81
+            {start: 0.85,   end: 1.40}, //1.64
+            {start: 1.65,   end: 2.30}, //2.46
+            {start: 2.5,    end: 3.40},
+            {start: 3.55,   end: 4.94},
+            {start: 4.95,   end: 6.25}, //6.47
+            {start: 6.5,    end: 7.66},
+            {start: 7.7,    end: 8.35}, //8.47
+            {start: 8.5,    end: 9.15}, //9.30
+            {start: 9.35,   end: 10.13}
+        ];
+
+        this.clear = {start: 10.15, end: 11.01};
+        //this.audioPlayer   = $("#audioPlayer").get(0);
+        this.enableAudioPlayers($("#enableAudioButton").get(0), [this.gameSfx], ready);
+
+
     },
 
-    play: function(assetId) {
-        var asset = this.sounds.sounds[assetId];
-        asset.play();
+    onPlay: function(e) {
+        var gameSfx = this.gameSfx,
+            end = this.end;
+
+        if(end == 0 || gameSfx.currentTime >= end) {
+            gameSfx.pause();
+        }
     },
 
-    playFromSequence: function(sequenceId, index) {
-        var asset = this.sounds.sounds[sequenceId][index];
-        asset.play();
+    playClear: function() {
+        var gameSfx = this.gameSfx;
+
+        gameSfx.currentTime = this.clear.start;
+        this.end = this.clear.end;
+
+        if(gameSfx.paused) {
+            gameSfx.play();
+        }
     },
 
     playNextChime: function() {
-        var chimes = this.chimes,
+        var gameSfx = this.gameSfx,
+            chimes = this.chimes,
             currentChime = this.currentChime + 1;
 
         if(currentChime >= chimes.length) {
             currentChime = chimes.length - 1;
         }
 
-        chimes[currentChime].currentTime = 0;
-        chimes[currentChime].play();
+        gameSfx.currentTime = chimes[currentChime].start;
+        this.end = chimes[currentChime].end;
+
+        if(gameSfx.paused)
+            gameSfx.play();
 
         this.currentChime = currentChime;
     },
 
     playPreviousChime: function() {
-        var chimes = this.chimes,
+        var gameSfx = this.gameSfx,
+            chimes = this.chimes,
             currentChime = this.currentChime - 1;
 
         if(currentChime < 0) {
             currentChime = 0;
         }
 
-        chimes[currentChime].currentTime = 0;
-        chimes[currentChime].play();
+        gameSfx.currentTime = chimes[currentChime].start;
+        this.end = chimes[currentChime].end;
+
+        if(gameSfx.paused)
+            gameSfx.play();
 
         this.currentChime = currentChime;
     },
@@ -55,33 +91,56 @@ EARTH.audioManager = {
 
     // This supposedly enables audio on an HTML audio element on iOS...
     // http://blog.gopherwoodstudios.com/2012/07/enabling-html5-audio-playback-on-ios.html
-    enableAudio: function(element, audio, onEnd){
-        var callback = false,
-            click    = false;
+    enableAudioPlayers: function(element, audioPlayers, onEnd){
+        var self = this,
+            callbacks = [],
+            playerCount = audioPlayers.length,
+            readyCount = 0,
+            click = false;
 
         click = function(e){
-            var forceStop = function () {
-                    audio.removeEventListener('play', forceStop, false);
-                    audio.pause();
-                    element.removeEventListener('touchstart', click, false);
-                    if(onEnd) onEnd();
+            var audioPlayer,
+                forceStop = function () {
+                    this.removeEventListener('play', forceStop, false);
+                    this.pause();
+
+                    element.removeEventListener('click', click, false);
+                    readyCount++;
+                    if(onEnd && readyCount == playerCount) {
+                        onEnd();
+                        //self.gameSfx.addEventListener('play', $.proxy(self.onPlay, self), false);
+                        self.gameSfx.addEventListener('timeupdate', $.proxy(self.onPlay, self), false);
+                    }
+
                 },
                 progress  = function () {
-                    audio.removeEventListener('canplaythrough', progress, false);
-                    if (callback) callback();
+                    this.removeEventListener('canplaythrough', progress, false);
+                    if (this.callback) this.callback();
                 };
 
-            audio.addEventListener('play', forceStop, false);
-            audio.addEventListener('canplaythrough', progress, false);
-            try {
-                audio.play();
-            } catch (e) {
-                callback = function () {
-                    callback = false;
-                    audio.play();
-                };
+            for(var i = 0; i < playerCount; i++) {
+                audioPlayer = audioPlayers[i];
+                audioPlayer.addEventListener('play', forceStop, false);
+                audioPlayer.addEventListener('canplaythrough', progress, false);
+                try {
+                    audioPlayer.play();
+                } catch (e) {
+                    audioPlayer.callback = self.getCallback(audioPlayer, callbacks[i]);
+                    /*callback = function () {
+                        callback = false;
+                        audioPlayer.play();
+                    };*/
+                }
             }
         };
-        element.addEventListener('touchstart', click, false);
+        element.addEventListener('click', click, false);
+        //element.addEventListener('click', click, false);
+    },
+
+    getCallback: function(audioPlayer, callback) {
+        return function() {
+            callback = false;
+            audioPlayer.play();
+        }
     }
 };

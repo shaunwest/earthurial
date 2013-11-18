@@ -268,10 +268,11 @@ EARTH.gameManager = {
                         var previousTile = selectedTiles[i - 1];
                         if(t.type !== previousTile.type) {
                             score.pointMultiplier--;
+                            this.audioManager.playPreviousChime();
                         }
 
                     }
-                    this.audioManager.playPreviousChime();
+                    ///this.audioManager.playPreviousChime();
                 }
 
                 // Figure out new selectCount
@@ -320,7 +321,7 @@ EARTH.gameManager = {
                     board.totalCount++;
                     board.selectedTile = tile;
 
-                    this.audioManager.playNextChime();
+                    ///this.audioManager.playNextChime();
                 }
 
                 if(selectedTiles.length > 2) {
@@ -408,6 +409,7 @@ EARTH.gameManager = {
         this.removeTiles();
 
         ///clearSound.play();
+        this.audioManager.playClear();
     },
 
     removeTiles: function() {
