@@ -7,19 +7,20 @@
 EARTH.timeManager = {
     ONE_SECOND: 1000,
     MINIMUM_FRAME_LENGTH: 0.048,
-    TIMER_START: 61,
+    //TIMER_START: 61,
 
-    init: function(targetFps, updateFunc, drawFunc) {
-        this.targetFps      = targetFps;
+    init: function(time, updateFunc, drawFunc) {
+        this.targetFps      = time.targetFps;
         this.updateFunc     = updateFunc;
         this.drawFunc       = drawFunc;
+        this.time           = time;
         this.frameFunc      = $.proxy(this.frame, this);
-        this.fps            = 0;
+        //this.fps            = 0;
         this.ticks          = 0;
         this.frameCount     = 1;
         this.maxFrameCount  = 30;
         this.elapsedTotal   = 0;
-        this.timerCount     = this.TIMER_START;
+        //this.timerCount     = this.TIMER_START;
         this.lastUpdateTime = new Date();
         this.averageElapsed = 0;
         this.elapsedSeconds = 0;
@@ -30,7 +31,7 @@ EARTH.timeManager = {
         this.timeout        = 0;
         this.timeoutCount   = 0;
         this.timeoutFunc    = null;
-        this.$reportFps     = null;
+        //this.$reportFps     = null;
 
         this.initRequestAnimationFrame(this.frameLength);
     },
@@ -63,7 +64,7 @@ EARTH.timeManager = {
                 this.MINIMUM_FRAME_LENGTH
             );
 
-        this.timerCount -= secondsElapsed;
+        //this.timerCount -= secondsElapsed;
         this.lastUpdateTime = now;
 
         secondsElapsed = this.getAverageElapsed(secondsElapsed);
@@ -100,12 +101,13 @@ EARTH.timeManager = {
     },
 
     oneSecondTick: function() {
-        this.fps = this.ticks.toString();
-        if(this.$reportFps) {
-            this.$reportFps.text(this.fps);
-        }
+        this.time.fps = this.ticks.toString();
+        //if(this.$reportFps) {
+        //    this.$reportFps.text(this.fps);
+        //}
         this.ticks = 0;
         this.elapsedSeconds++;
+        this.time.timerCount--;
     },
 
     initRequestAnimationFrame: function(frameLength) {

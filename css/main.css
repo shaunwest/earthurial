@@ -195,6 +195,33 @@ nav a:hover {
     height: 20px;
 }
 
+.stonesContainer {
+}
+
+.stoneSprite {
+    visibility: hidden;
+    float: left;
+    background-image: url("../img/tiles.png");
+    width: 75px; height: 75px;
+}
+
+.greenStone { background-position: 0 0; }
+.blackStone { background-position: 0 -75px; }
+.blueStone { background-position: 0 -150px; }
+.purpleStone { background-position: 0 -225px; }
+.redStone { background-position: 0 -300px; }
+
+.hudContainer {
+    float: right;
+}
+
+.score, .points, .timer {
+    float: left;
+    font-family: "Times New Roman", serif;
+    font-size: 35pt;
+    width: 200px;
+    height: 75px;
+}
 
 
 /* ==========================================================================

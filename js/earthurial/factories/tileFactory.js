@@ -34,7 +34,7 @@ EARTH.tileFactory = {
         tile.y = 0;
         tile.type = 0;
         tile.selected = false;
-        tile.glowing = false;
+        tile.clearing = false;
     },
 
     getSimpleRandomTile: function() {

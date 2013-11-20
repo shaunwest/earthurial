@@ -7,6 +7,7 @@ EARTH.board = {
     SELECTION_LENGTH: 2,
     DEFAULT_WIDTH: 8,
     DEFAULT_HEIGHT: 16,
+    MAX_CLEAR_COUNT: 5,
 
     grid: [],
     string: "",
@@ -19,6 +20,7 @@ EARTH.board = {
     selectCount: 0,
     totalCount: 0,
     currentType: -1,
+    clearCount: this.MAX_CLEAR_COUNT,
 
     getTileByPxLocation: function(px, py) {
         var bx = Math.floor(px / this.tileWidth),

@@ -7,6 +7,7 @@ $(document).ready(function() {
         score           = EARTH.score,
         tileSheets      = EARTH.tileSheets,
         sounds          = EARTH.sounds,
+        time            = EARTH.time,
 
         // Managers
         assetManager    = EARTH.assetManager,
@@ -17,6 +18,8 @@ $(document).ready(function() {
 
         // Views
         boardView       = EARTH.boardView,
+        stonesView      = EARTH.stonesView,
+        hudView         = EARTH.hudView,
 
         // Factories
         tileFactory     = EARTH.tileFactory,
@@ -29,10 +32,12 @@ $(document).ready(function() {
 
 
     // Init config values
-    board.boardWidth = config.boardWidth;
-    board.boardHeight = config.boardHeight;
-    board.tileWidth = config.tileWidth;
-    board.tileHeight = config.tileHeight;
+    board.boardWidth    = config.boardWidth;
+    board.boardHeight   = config.boardHeight;
+    board.tileWidth     = config.tileWidth;
+    board.tileHeight    = config.tileHeight;
+
+    time.targetFps      = config.targetFps,
 
 
     // Get our graphics and sfx
@@ -67,7 +72,7 @@ $(document).ready(function() {
             // Handles sfx
             audioManager.init(sounds, function() {
                 // Handles mouse, touch, and keyboard interactions from the user
-                inputManager.init($canvas, "touch");
+                inputManager.init($canvas);
 
                 // Controls every aspect of the core game play
                 gameManager.init(inputManager, score, tileFactory, config.fallSpeed, audioManager);
@@ -76,14 +81,30 @@ $(document).ready(function() {
                 // The visible board
                 boardView.init(canvas, board, tileSheets.tileSheets["gameTiles"]);
 
+                // Shows the stone types that are selected currently
+                stonesView.init(score, {
+                    greenStone: $(".greenStone"),
+                    blackStone: $(".blackStone"),
+                    blueStone: $(".blueStone"),
+                    purpleStone: $(".purpleStone"),
+                    redStone: $(".redStone")
+                });
+
+                // Shows the temp score, the player's total score, and the time
+                hudView.init(score, time, $(".score"), $(".points"), $(".timer"));
+
                 // Manages the main game loop
                 timeManager.init(
-                    config.targetFps,
+                    time,
                     update,
-                    $.proxy(boardView.draw, boardView)
+                    function() {
+                        boardView.draw();
+                        stonesView.draw();
+                        hudView.draw();
+                    }
                 );
 
-                timeManager.$reportFps = $fps;
+                //timeManager.$reportFps = $fps;
                 timeManager.start();
             });
         }

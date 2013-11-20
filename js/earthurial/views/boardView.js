@@ -33,8 +33,18 @@ EARTH.boardView = {
         }
     },
 
+    getTileImage: function(tile, tileSheet) {
+        if(tile.clearing) {
+            return tileSheet[this.board.clearCount][2];
+        } else if(tile.selected) {
+            return tileSheet[tile.type][1];
+        } else {
+            return tileSheet[tile.type][0];
+        }
+    },
+
     drawTile: function(tile, tileSheet, context) {
-        var tileImage = (tile.selected) ? tileSheet[tile.type][1] : tileSheet[tile.type][0];
+        var tileImage = this.getTileImage(tile, tileSheet); //(tile.selected) ? tileSheet[tile.type][1] : tileSheet[tile.type][0];
         if(tileImage) {
             context.drawImage(tileImage, tile.x, tile.y);
         } else {

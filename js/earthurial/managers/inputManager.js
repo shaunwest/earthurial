@@ -6,7 +6,7 @@
 EARTH.inputManager = {
     DEFAULT_TOP_OFFSET: 600,
 
-    init: function($inputRegion, mode) {
+    init: function($inputRegion) {
         this.$inputRegion   = $inputRegion;
         this.$inputContainer= $inputRegion.parent();
         this.down           = false;

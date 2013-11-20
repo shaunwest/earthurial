@@ -123,7 +123,8 @@ EARTH.gameManager = {
     },
 
     update: function(secondsElapsed) {
-        var inputManager = this.inputManager;
+        var inputManager = this.inputManager,
+            board = this.board;
 
         if(inputManager.startSelecting) {
             this.startSelection(inputManager.inputLocation);
@@ -133,6 +134,12 @@ EARTH.gameManager = {
 
         } else if(inputManager.endSelecting) {
             this.endPath();
+        }
+
+        if(board.clearCount < board.MAX_CLEAR_COUNT) {
+            if(++board.clearCount === board.MAX_CLEAR_COUNT) {
+                this.removeTiles();
+            }
         }
 
         this.updateTiles(secondsElapsed);
@@ -171,7 +178,7 @@ EARTH.gameManager = {
                 score.recordType(board.selectedTile.type);
                 board.currentType = tile.type;
 
-                this.audioManager.playNextChime();
+                //this.audioManager.playNextChime();
             }
         }
     },
@@ -371,7 +378,7 @@ EARTH.gameManager = {
             //    }
             //}
 
-            board.selectedTiles.length = 0; // OLDTODO: can this move to resetValues()??
+            //board.selectedTiles.length = 0; // OLDTODO: can this move to resetValues()??
         } else {
             board.selectedTiles.length = 0;
             score.tempPoints = 0;
@@ -400,19 +407,22 @@ EARTH.gameManager = {
 
         for(var i = 0; i < tileSet.length; i++) {
             tile = tileSet[i];
-            tile.glowing = true;
+            tile.clearing = true;
         }
 
         //glowTimer = new Timer(400, 1);
         //glowTimer.addEventListener(TimerEvent.TIMER_COMPLETE, removeTiles);
         //glowTimer.start();
-        this.removeTiles();
+
+        //this.removeTiles();
+        this.board.clearCount = 0;
 
         ///clearSound.play();
         this.audioManager.playClear();
     },
 
     removeTiles: function() {
+        console.log("remove");
         var board = this.board,
             tileFactory = this.tileFactory,
             tileSet = this.tileSet,
@@ -521,6 +531,7 @@ EARTH.gameManager = {
         var board = this.board,
             score = this.score;
 
+        score.resetStoneCounts();
         board.selectCount = 0;
         board.totalCount = 0;
         score.tileValue = score.TILE_VALUE;

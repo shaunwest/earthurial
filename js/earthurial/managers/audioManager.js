@@ -9,7 +9,8 @@ EARTH.audioManager = {
         this.currentChime   = -1;
         this.sounds         = sounds;
         this.gameSfx        = sounds.sounds["gameSfx"];
-        this.chimes      = [
+
+        this.chimes         = [
             {start: 0.0,    end: 0.65}, //.81
             {start: 0.85,   end: 1.40}, //1.64
             {start: 1.65,   end: 2.30}, //2.46
@@ -23,10 +24,8 @@ EARTH.audioManager = {
         ];
 
         this.clear = {start: 10.15, end: 11.01};
-        //this.audioPlayer   = $("#audioPlayer").get(0);
+
         this.enableAudioPlayers($("#enableAudioButton").get(0), [this.gameSfx], ready);
-
-
     },
 
     onPlay: function(e) {
@@ -108,7 +107,6 @@ EARTH.audioManager = {
                     readyCount++;
                     if(onEnd && readyCount == playerCount) {
                         onEnd();
-                        //self.gameSfx.addEventListener('play', $.proxy(self.onPlay, self), false);
                         self.gameSfx.addEventListener('timeupdate', $.proxy(self.onPlay, self), false);
                     }
 

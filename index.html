@@ -43,9 +43,21 @@
             <div class="main wrapper clearfix">
 
                 <article>
+                    <div class="hudContainer">
+                        <div class="score"></div>
+                        <div class="points"></div>
+                        <div class="timer"></div>
+                    </div>
                     <div id="gameContainer">
                         <canvas id="gameDisplay" width="600" height="1200"></canvas>
                         <div id="fps"></div>
+                    </div>
+                    <div class="stonesContainer">
+                        <div class="redStone stoneSprite"></div>
+                        <div class="greenStone stoneSprite"></div>
+                        <div class="blueStone stoneSprite"></div>
+                        <div class="purpleStone stoneSprite"></div>
+                        <div class="blackStone stoneSprite"></div>
                     </div>
 
                     <header>
@@ -80,6 +92,7 @@
         <script src="js/earthurial/models/score.js"></script>
         <script src="js/earthurial/models/tileSheets.js"></script>
         <script src="js/earthurial/models/sounds.js"></script>
+        <script src="js/earthurial/models/time.js"></script>
         <script src="js/earthurial/factories/tileFactory.js"></script>
         <script src="js/earthurial/managers/assetManager.js"></script>
         <script src="js/earthurial/managers/audioManager.js"></script>
@@ -87,6 +100,8 @@
         <script src="js/earthurial/managers/inputManager.js"></script>
         <script src="js/earthurial/managers/gameManager.js"></script>
         <script src="js/earthurial/views/boardView.js"></script>
+        <script src="js/earthurial/views/stonesView.js"></script>
+        <script src="js/earthurial/views/hudView.js"></script>
 
         <script src="js/main.js"></script>
 

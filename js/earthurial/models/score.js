@@ -15,6 +15,13 @@ EARTH.score = {
     pointMultiplier: 1,
 
     stats: {
+        stoneCounts: [
+            0,  // green
+            0,  // black
+            0,  // blue
+            0,  // purple
+            0   // red
+        ],
         clearCount: 0,
         sparkCount: 0,
         morpherCount: 0,
@@ -28,6 +35,14 @@ EARTH.score = {
         loseCount: 0
     },
 
+    resetStoneCounts: function() {
+        var stoneCounts = this.stats.stoneCounts;
+
+        for(var i = 0; i < stoneCounts.length; i++) {
+            stoneCounts[i] = 0;
+        }
+    },
+
     bank: function() {
         this.totalScore += this.tempPoints;
         this.tempPoints = 0;
@@ -35,10 +50,12 @@ EARTH.score = {
 
     // record the numbers of each type used
     recordType: function(type) {
+        this.stats.stoneCounts[type]++;
     },
 
     // decrease the number of usages of a given type
     decrementType: function(type) {
+        this.stats.stoneCounts[type]--;
     },
 
     debug: function() {
