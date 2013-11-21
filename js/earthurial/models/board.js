@@ -39,6 +39,13 @@ EARTH.board = {
         this.grid[bx][by] = null;
     },
 
+    addTile: function(tile) {
+        var bx = Math.floor(tile.x / this.tileWidth),
+            by = Math.floor(tile.y / this.tileHeight);
+
+        this.grid[bx][by] = tile;
+    },
+
     isAdjacentToTile: function(tile, adjacentTile) {
         var board = this.grid,
             bx = Math.floor(tile.x / this.tileWidth),

@@ -11,5 +11,6 @@ EARTH.config = {
     boardHeight: 16,
     tileWidth: 75,
     tileHeight: 75,
-    fallSpeed: 937 //~15
+    fallSpeed: 937, //~15
+    bonusStonesEnabled: true
 };

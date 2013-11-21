@@ -19,6 +19,7 @@ EARTH.gameManager = {
         this.tileFactory = tileFactory;
         this.fallSpeed = fallSpeed;
         this.isCascading = false;
+        this.bonus = score.BONUS_NONE;
     },
 
     createBoard: function(board, savedBoard) {
@@ -73,30 +74,17 @@ EARTH.gameManager = {
         }
     },
 
-    /*createUpperBoard: function(board) {
-        var tempBoard = [],//TODO: PERF - this is going to cause some major GC
-            lowerBoard = board.grid,
-            upperBoard = board.upper,
-            tileFactory = this.tileFactory,
-            width = board.boardWidth, height = board.boardHeight,
-            tile;
+    createMorpherTile: function(column) {
+        var tileFactory = this.tileFactory,
+            board = this.board,
+            tile = tileFactory.getTileType(5); // morpher
 
-        for (var i = 0; i < width; i++) {
-            tempBoard[i] = [];
-            for (var j = 0; j < height; j++) {
-                if(!upperBoard[i] || !upperBoard[i][j]) {
-                    tile = this.getRandomTileForUpper(i, j, lowerBoard, tileFactory);
-                    tile.x = i * tile.width;
-                    tile.y = (j * tile.height) - 600; //I think this shifts everything up off the visible board
-                    tempBoard[i][j] = tile;
-                } else {
-                    tempBoard[i][j] = upperBoard[i][j];
-                }
-            }
-        }
+        tile.x = (column * board.tileWidth);
+        tile.y = (7 * board.tileHeight); // create in upper section of board
 
-        board.upper = tempBoard;
-    },*/
+        board.addTile(tile);
+        //flareSound.play();
+    },
 
     getRandomTile: function(i, j, board, tileFactory) {
         var tileMatch = Math.floor(Math.random() * 40); // 2 in 40 chance of copying adjacent tile
@@ -124,6 +112,7 @@ EARTH.gameManager = {
 
     update: function(secondsElapsed) {
         var inputManager = this.inputManager,
+            score = this.score,
             board = this.board;
 
         if(inputManager.startSelecting) {
@@ -140,6 +129,17 @@ EARTH.gameManager = {
             if(++board.clearCount === board.MAX_CLEAR_COUNT) {
                 this.removeTiles();
             }
+        }
+
+        if(this.bonus) {
+            EARTH.log("BONUS " + this.bonus);
+            switch(this.bonus) {
+                case score.BONUS_MORPHER:
+                    this.createMorpherTile(0);
+                    break;
+            }
+
+            this.bonus = this.score.BONUS_NONE;
         }
 
         this.updateTiles(secondsElapsed);
@@ -339,7 +339,6 @@ EARTH.gameManager = {
                 }
             }
         }
-        EARTH.log("DO TILE SELECT");
     },
 
     endPath: function() {
@@ -378,7 +377,6 @@ EARTH.gameManager = {
             //    }
             //}
 
-            //board.selectedTiles.length = 0; // OLDTODO: can this move to resetValues()??
         } else {
             board.selectedTiles.length = 0;
             score.tempPoints = 0;
@@ -387,27 +385,17 @@ EARTH.gameManager = {
     },
 
     destroyTiles: function(tileSet) {
-        var tile;
+        var score = this.score;
 
         this.tileSet = tileSet;
         this.inputManager.enableInput(false);
 
-        if(!this.disableClearBonus) {
-            // Notify user of bonus
-            //if(tileSet.length > 0 && getUsedColorCount() >= PHOENIX_BONUS_REQ && !gameParameters.bonus_stones_off) {
-            //    dispatchEvent(new BonusEvent(BonusEvent.BONUS_EVENT, "PHOENIX!", PHOENIX_CODE));
-            //} else if(tileSet.length > 0 && getUsedColorCount() >= MORPHER_BONUS_REQ && !gameParameters.bonus_stones_off) {
-            //    dispatchEvent(new BonusEvent(BonusEvent.BONUS_EVENT, "Morpher Stone!", MORPHER_CODE));
-            //} else if(tileSet.length > 0 && getUsedColorCount() >= SPARK_BONUS_REQ && !gameParameters.bonus_stones_off) {
-            //    dispatchEvent(new BonusEvent(BonusEvent.BONUS_EVENT, "Spark Stone!", SPARK_CODE));
-            //} else if(tileSet.length > 0 && getUsedColorCount() >= TIME_BONUS_REQ && totalTimeBonus < TIME_BONUS_MAX && !gameParameters.time_bonus_off) {
-            //    dispatchEvent(new BonusEvent(BonusEvent.BONUS_EVENT, "Time Bonus!", TIME_CODE));
-            //}
+        if(!this.disableClearBonus && score.bonusStonesEnabled) {
+            this.bonus = score.checkForBonus(tileSet.length);
         }
 
         for(var i = 0; i < tileSet.length; i++) {
-            tile = tileSet[i];
-            tile.clearing = true;
+            tileSet[i].clearing = true;
         }
 
         //glowTimer = new Timer(400, 1);
@@ -422,7 +410,6 @@ EARTH.gameManager = {
     },
 
     removeTiles: function() {
-        console.log("remove");
         var board = this.board,
             tileFactory = this.tileFactory,
             tileSet = this.tileSet,
@@ -455,8 +442,8 @@ EARTH.gameManager = {
             tileFactory.freeTile(tile);
         }
 
-        if(!this.disableClearBonus) {
-            // See AS3 code
+        if(!this.disableClearBonus && tileSet.length > 0) {
+           // TODO: figure out if this is even needed
         }
 
         ///resetColorsUsed();
@@ -469,63 +456,6 @@ EARTH.gameManager = {
 
         tileSet.length = 0;
     },
-
-
-    /*startCascade: function() {
-        var newBoardCounts = [], newBoard = [],
-            board = this.board,
-            grid = board.grid, upper = board.upper,
-            width = board.boardWidth, height = board.boardHeight;
-
-        this.isCascading = true;
-
-        for(var i = 0; i < width; i++) {
-            newBoard[i] = [];
-            newBoardCounts[i] = 0;
-            for(var j = 0; j < height; j++) {
-                var emptyCount = 0;
-                for(var k = j + 1; k < height; k++) {
-                    if(grid[i][k] == null) {
-                        emptyCount++;
-                    }
-                }
-
-                if(grid[i][j] != null) {
-                    ///grid[i][j].startCascade(emptyCount);
-                    grid[i][j].falling = true;
-                    newBoard[i][j + emptyCount] = grid[i][j];
-                } else {
-                    emptyCount++;
-                }
-
-                if(emptyCount > newBoardCounts[i]) {
-                    newBoardCounts[i] = emptyCount;
-                }
-            }
-        }
-
-        for(var m = 0; m < width; m++) {
-            var count = newBoardCounts[m];
-            for(var n = height - count; n < height; n++) {
-                var t = upper[m][n];
-                ////t.startCascade(count);
-                t.falling = true;
-                newBoard[m][-(8 - n - count)] = t;
-                upper[m][n] = null;
-            }
-        }
-
-        this.board.grid = newBoard;
-        this.createUpperBoard(this.board);
-
-        ///fallSound.play();
-
-        this.inputManager.enableInput(true);
-
-        //if(!movesRemain()) {
-        //    dispatchEvent(new GameEndEvent(GameEndEvent.END_EVENT, "No moves remain"));
-        //}
-    },*/
 
     resetValues: function() {
         var board = this.board,

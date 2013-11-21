@@ -32,12 +32,14 @@ $(document).ready(function() {
 
 
     // Init config values
-    board.boardWidth    = config.boardWidth;
-    board.boardHeight   = config.boardHeight;
-    board.tileWidth     = config.tileWidth;
-    board.tileHeight    = config.tileHeight;
+    board.boardWidth            = config.boardWidth;
+    board.boardHeight           = config.boardHeight;
+    board.tileWidth             = config.tileWidth;
+    board.tileHeight            = config.tileHeight;
 
-    time.targetFps      = config.targetFps,
+    score.bonusStonesEnabled    = config.bonusStonesEnabled;
+
+    time.targetFps              = config.targetFps,
 
 
     // Get our graphics and sfx
