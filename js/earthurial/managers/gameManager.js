@@ -4,6 +4,8 @@
  */
 
 EARTH.gameManager = {
+    SPARK_RECURSIONS: 3,
+
     inputManager: null,
     board: null,
     score: null,
@@ -19,6 +21,7 @@ EARTH.gameManager = {
         this.tileFactory = tileFactory;
         this.fallSpeed = fallSpeed;
         this.isCascading = false;
+        this.isClearing = false;
         this.bonus = score.BONUS_NONE;
     },
 
@@ -86,6 +89,39 @@ EARTH.gameManager = {
         //flareSound.play();
     },
 
+    createSparkTile: function(column) {
+        var tileFactory = this.tileFactory,
+            board = this.board,
+            tile = tileFactory.getTileType(6); // morpher
+
+        tile.x = (column * board.tileWidth);
+        tile.y = (7 * board.tileHeight); // create in upper section of board
+
+        board.addTile(tile);
+        //flareSound.play();
+    },
+
+    igniteSpark: function(sparkTile, radius) {
+        var board = this.board,
+            bx = board.getColumn(sparkTile),
+            by = board.getRow(sparkTile),
+            minX = Math.max(bx - radius, 0),
+            minY = Math.max(by - radius, 0),
+            maxX = Math.min(bx + radius, 7),
+            maxY = Math.min(by + radius, 7),
+            tile;
+
+        ///board.clearCount = 0;
+
+        for(var i = minX; i <= maxX; i++) {
+            for(var j = minY; j <= maxY; j++) {
+              tile = board.getTile(i, j);
+              //  add to list of tiles to clear... then call clearSet??
+            }
+        }
+    },
+
+
     getRandomTile: function(i, j, board, tileFactory) {
         var tileMatch = Math.floor(Math.random() * 40); // 2 in 40 chance of copying adjacent tile
 
@@ -125,17 +161,20 @@ EARTH.gameManager = {
             this.endPath();
         }
 
-        if(board.clearCount < board.MAX_CLEAR_COUNT) {
+        /*if(board.clearCount < board.MAX_CLEAR_COUNT) {
             if(++board.clearCount === board.MAX_CLEAR_COUNT) {
                 this.removeTiles();
             }
-        }
+        }*/
 
         if(this.bonus) {
             EARTH.log("BONUS " + this.bonus);
             switch(this.bonus) {
                 case score.BONUS_MORPHER:
                     this.createMorpherTile(0);
+                    break;
+                case score.BONUS_SPARK:
+                    this.createSparkTile(0);
                     break;
             }
 
@@ -200,10 +239,12 @@ EARTH.gameManager = {
             width = board.boardWidth,
             height = board.boardHeight,
             enableInput = true,
-            cascading = false,
+            cascadingFlag = false,
+            clearingFlag = false,
             fallSpeed = Math.floor(this.fallSpeed * secondsElapsed),
             tile, gridColumn,
             jPlusOne, jPlusTwo;
+
 
         for(var i = 0; i < width; i++) {
             gridColumn = grid[i];
@@ -225,7 +266,14 @@ EARTH.gameManager = {
                     if(Math.floor(tile.y / board.tileHeight) != j) {
                         tile.y += Math.min(fallSpeed, (board.tileHeight * j) - tile.y);
                         enableInput = false;
-                        cascading = true;
+                        cascadingFlag = true;
+                    }
+
+                    if(tile.clearCount > 0) {
+                        if(--tile.clearCount == 0) {
+                            tile.cleared = true;
+                        }
+                        clearingFlag = true;
                     }
                 }
             }
@@ -233,11 +281,17 @@ EARTH.gameManager = {
 
         this.inputManager.enableInput(enableInput);
 
+        // Check if clearing is done. If it is, remove
+        // the cleared tiles
+        if(this.isClearing && clearingFlag == false) {
+            this.isClearing = false;
+            this.removeTiles();
+        }
+
         // See if cascading is done. If it is, fill in
         // the upper board.
-        if(this.isCascading && cascading == false) {
+        if(this.isCascading && cascadingFlag == false) {
             this.isCascading = false;
-
             this.createUpperTiles();
         }
     },
@@ -395,7 +449,9 @@ EARTH.gameManager = {
         }
 
         for(var i = 0; i < tileSet.length; i++) {
-            tileSet[i].clearing = true;
+            //tileSet[i].clearing = true;
+            tileSet[i].clearCount = this.board.MAX_CLEAR_COUNT;
+            this.isClearing = true;
         }
 
         //glowTimer = new Timer(400, 1);
@@ -403,7 +459,7 @@ EARTH.gameManager = {
         //glowTimer.start();
 
         //this.removeTiles();
-        this.board.clearCount = 0;
+        ///this.board.clearCount = 0;
 
         ///clearSound.play();
         this.audioManager.playClear();

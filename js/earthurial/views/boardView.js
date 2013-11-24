@@ -34,8 +34,12 @@ EARTH.boardView = {
     },
 
     getTileImage: function(tile, tileSheet) {
-        if(tile.clearing) {
-            return tileSheet[this.board.clearCount][2];
+        if(tile.cleared) {
+            return null;
+        }
+
+        if(tile.clearCount) {
+            return tileSheet[this.board.MAX_CLEAR_COUNT - tile.clearCount][2];
         } else if(tile.selected) {
             return tileSheet[tile.type][1];
         } else {

@@ -186,7 +186,7 @@ nav a:hover {
 }
 
 #gameDisplay {
-    background-color: blue;
+    background-color: #07251f;
     cursor: pointer;
 }
 
@@ -211,16 +211,29 @@ nav a:hover {
 .purpleStone { background-position: 0 -225px; }
 .redStone { background-position: 0 -300px; }
 
-.hudContainer {
+.row { float: left; width: 100%; }
+.column { float: left; }
+.halfWidth { width: 50%; }
+
+.score, .points {
     float: right;
 }
 
 .score, .points, .timer {
-    float: left;
     font-family: "Times New Roman", serif;
+}
+
+.score {
+    padding-bottom: 10px;
     font-size: 35pt;
-    width: 200px;
-    height: 75px;
+}
+
+.points {
+    font-size: 25pt;
+}
+
+.timer {
+    font-size: 50pt;
 }
 
 

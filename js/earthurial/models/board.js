@@ -7,7 +7,7 @@ EARTH.board = {
     SELECTION_LENGTH: 2,
     DEFAULT_WIDTH: 8,
     DEFAULT_HEIGHT: 16,
-    MAX_CLEAR_COUNT: 5,
+    MAX_CLEAR_COUNT: 9,
 
     grid: [],
     string: "",
@@ -20,7 +20,15 @@ EARTH.board = {
     selectCount: 0,
     totalCount: 0,
     currentType: -1,
-    clearCount: this.MAX_CLEAR_COUNT,
+    //clearCount: this.MAX_CLEAR_COUNT,
+
+    getRow: function(tile) {
+        return Math.floor(tile.y / this.tileHeight);
+    },
+
+    getColumn: function(tile) {
+        return Math.floor(tile.x / this.tileWidth);
+    },
 
     getTileByPxLocation: function(px, py) {
         var bx = Math.floor(px / this.tileWidth),
@@ -30,6 +38,12 @@ EARTH.board = {
             return this.grid[bx][by];
         }
         return null;
+    },
+
+    getTile: function(bx, by) {
+        if(bx >= 0 && by >= 0 && bx < this.boardWidth && by < this.boardHeight) {
+            return this.grid[bx][by];
+        }
     },
 
     removeTile: function(tile) {

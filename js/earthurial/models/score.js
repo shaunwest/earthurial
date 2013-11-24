@@ -9,8 +9,8 @@ EARTH.score = {
     TILE_VALUE              : 100,
     TILE_VALUE_LIMIT        : 600,
 
-    SPARK_BONUS_REQ         : 3,
-    MORPHER_BONUS_REQ       : 2, //4
+    SPARK_BONUS_REQ         : 2,
+    MORPHER_BONUS_REQ       : 4,
     PHOENIX_BONUS_REQ       : 5,
     TIME_BONUS_REQ          : 3,
 
@@ -21,6 +21,9 @@ EARTH.score = {
     BONUS_NONE              : 0,
 
     TIME_BONUS_MAX          : 60,
+
+    SPARK_VALUE             : 200,
+    MORPHER_DESTROY_VALUE   : 1000,
 
     totalScore              : 0,
     tileValue               : 0,

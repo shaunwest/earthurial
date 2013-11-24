@@ -8,5 +8,6 @@ EARTH.tile = {
     x: 0,
     y: 0,
     selected: false,
-    clearing: false
+    cleared: false,
+    clearCount: 0
 };

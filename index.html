@@ -43,11 +43,20 @@
             <div class="main wrapper clearfix">
 
                 <article>
-                    <div class="hudContainer">
-                        <div class="score"></div>
-                        <div class="points"></div>
-                        <div class="timer"></div>
+                    <div class="row">
+                        <div class="column halfWidth">
+                            <div class="timer"></div>
+                        </div>
+                        <div class="column halfWidth">
+                            <div class="row">
+                                <div class="score"></div>
+                            </div>
+                            <div class="row">
+                                <div class="points"></div>
+                            </div>
+                        </div>
                     </div>
+
                     <div id="gameContainer">
                         <canvas id="gameDisplay" width="600" height="1200"></canvas>
                         <div id="fps"></div>
