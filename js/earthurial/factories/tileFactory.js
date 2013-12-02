@@ -11,9 +11,9 @@ EARTH.tileFactory = {
         blue: 2,
         purple: 3,
         red: 4,
-        morpher: 5,
-        superMorpher: 6,
-        spark: 7,
+        spark: 5,
+        morpher: 6,
+        superMorpher: 7,
         phoenix: 8
     },
 
@@ -30,11 +30,11 @@ EARTH.tileFactory = {
     },
 
     setDefaultValues: function(tile) {
-        tile.x = 0;
-        tile.y = 0;
-        tile.type = 0;
-        tile.selected = false;
-        tile.clearing = false;
+        for(var key in EARTH.tile) {
+            if(EARTH.tile.hasOwnProperty(key)) {
+                tile[key] = EARTH.tile[key];
+            }
+        }
     },
 
     getSimpleRandomTile: function() {

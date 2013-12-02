@@ -23,6 +23,9 @@ EARTH.gameManager = {
         this.isCascading = false;
         this.isClearing = false;
         this.bonus = score.BONUS_NONE;
+
+        this.frameQueue = EARTH.frameQueue;
+        this.frameQueue.init();
     },
 
     createBoard: function(board, savedBoard) {
@@ -80,7 +83,7 @@ EARTH.gameManager = {
     createMorpherTile: function(column) {
         var tileFactory = this.tileFactory,
             board = this.board,
-            tile = tileFactory.getTileType(5); // morpher
+            tile = tileFactory.getTileType(tileFactory.tileTypes.morpher);
 
         tile.x = (column * board.tileWidth);
         tile.y = (7 * board.tileHeight); // create in upper section of board
@@ -92,7 +95,7 @@ EARTH.gameManager = {
     createSparkTile: function(column) {
         var tileFactory = this.tileFactory,
             board = this.board,
-            tile = tileFactory.getTileType(6); // morpher
+            tile = tileFactory.getTileType(tileFactory.tileTypes.spark);
 
         tile.x = (column * board.tileWidth);
         tile.y = (7 * board.tileHeight); // create in upper section of board
@@ -101,24 +104,41 @@ EARTH.gameManager = {
         //flareSound.play();
     },
 
-    igniteSpark: function(sparkTile, radius) {
+    doSpark: function(sparkTile, radius) {
         var board = this.board,
-            bx = board.getColumn(sparkTile),
             by = board.getRow(sparkTile),
-            minX = Math.max(bx - radius, 0),
-            minY = Math.max(by - radius, 0),
-            maxX = Math.min(bx + radius, 7),
-            maxY = Math.min(by + radius, 7),
-            tile;
+            bx = board.getColumn(sparkTile),
+            tiles;
 
-        ///board.clearCount = 0;
+        for(var i = 0; i <= radius; i++) {
+            tiles = this.getTileRadius(bx, by, i);
+            if(tiles.length > 0) {
+                this.frameQueue.enqueue($.proxy(this.destroyTiles, this, tiles));
+            }
+        }
+    },
+
+    getTileRadius: function(bx, by, radius) {
+        var board = this.board,
+            minX = bx - radius, //Math.max(bx - radius, 0),
+            minY = by - radius, //Math.max(by - radius, 8),
+            maxX = bx + radius, //Math.min(bx + radius, 7),
+            maxY = by + radius, //Math.min(by + radius, 15),
+            tiles = [],
+            tile;
 
         for(var i = minX; i <= maxX; i++) {
             for(var j = minY; j <= maxY; j++) {
-              tile = board.getTile(i, j);
-              //  add to list of tiles to clear... then call clearSet??
+                if(i == maxX || i == minX || j == maxY || j == minY) {
+                    tile = board.getTile(i, j);
+                    if(tile) {
+                        tiles.push(tile);
+                    }
+                }
             }
         }
+
+        return tiles;
     },
 
 
@@ -137,35 +157,32 @@ EARTH.gameManager = {
     getRandomTileForUpper: function(i, j, board, tileFactory) {
         var tileMatch = Math.floor(Math.random() * 10); // 2 in 10 chance of copying adjacent tile
 
-        if(tileMatch == 0 && 7 - i - 1 >= 0 && board[7 - i - 1][j])
+        if(tileMatch == 0 && 7 - i - 1 >= 0 && board[7 - i - 1][j]) {
             return tileFactory.getValidTile(board[7 - i - 1][j]);
-        else if(tileMatch == 1 && j - 1 >= 0 && board[7 - i][j - 1])
+
+        } else if(tileMatch == 1 && j - 1 >= 0 && board[7 - i][j - 1]) {
             return tileFactory.getValidTile(board[7 - i][j - 1]);
-        else {
+
+        } else {
             return tileFactory.getSimpleRandomTile();
         }
     },
 
     update: function(secondsElapsed) {
         var inputManager = this.inputManager,
-            score = this.score,
-            board = this.board;
+            score = this.score;
 
         if(inputManager.startSelecting) {
             this.startSelection(inputManager.inputLocation);
 
         } else if(inputManager.selecting) {
+            //console.log("selecting");
             this.doSelection(inputManager.inputLocation);
 
         } else if(inputManager.endSelecting) {
+
             this.endPath();
         }
-
-        /*if(board.clearCount < board.MAX_CLEAR_COUNT) {
-            if(++board.clearCount === board.MAX_CLEAR_COUNT) {
-                this.removeTiles();
-            }
-        }*/
 
         if(this.bonus) {
             EARTH.log("BONUS " + this.bonus);
@@ -183,41 +200,48 @@ EARTH.gameManager = {
 
         this.updateTiles(secondsElapsed);
 
+        this.frameQueue.update();
         inputManager.update();
     },
 
     startSelection: function(inputLocation) {
         var board = this.board,
             score = this.score,
+            tileTypes = this.tileFactory.tileTypes,
             px = inputLocation.x,
             py = inputLocation.y,
             tile = board.getTileByPxLocation(px, py);
 
         if(tile) {
-            if(board.selectedTile) {
-                if(board.selectedTile === tile) {
-                    this.endPath();
-                } else {
-                    this.doTileSelect(tile);
-                }
+            if(tile.type == tileTypes.spark) {
+                this.doSpark(tile, 2);
 
             } else {
-                board.selectedTile = tile;
-                tile.selected = true;
+                if(board.selectedTile) {
+                    if(board.selectedTile === tile) {
+                        this.endPath();
+                    } else {
+                        this.doTileSelect(tile);
+                    }
 
-                score.tempPoints = 0;
-                score.pointMultiplier = 1;
+                } else {
+                    board.selectedTile = tile;
+                    tile.selected = true;
 
-                score.tileValue = score.TILE_VALUE;
+                    score.tempPoints = 0;
+                    score.pointMultiplier = 1;
 
-                board.selectedTiles.push(tile);
-                board.selectCount++;
-                board.totalCount++;
+                    score.tileValue = score.TILE_VALUE;
 
-                score.recordType(board.selectedTile.type);
-                board.currentType = tile.type;
+                    board.selectedTiles.push(tile);
+                    board.selectCount++;
+                    board.totalCount++;
 
-                //this.audioManager.playNextChime();
+                    score.recordType(board.selectedTile.type);
+                    board.currentType = tile.type;
+
+                    //this.audioManager.playNextChime();
+                }
             }
         }
     },
@@ -228,7 +252,7 @@ EARTH.gameManager = {
             py = inputLocation.y,
             tile = board.getTileByPxLocation(px, py);
 
-        if(tile) {
+        if(tile && tile.type != this.tileFactory.tileTypes.spark) {
             this.doTileSelect(tile);
         }
     },
@@ -243,6 +267,7 @@ EARTH.gameManager = {
             clearingFlag = false,
             fallSpeed = Math.floor(this.fallSpeed * secondsElapsed),
             tile, gridColumn,
+            tilesToRemove = [],
             jPlusOne, jPlusTwo;
 
 
@@ -252,47 +277,56 @@ EARTH.gameManager = {
             for(var j = height - 1; j >= 0; j--) {
                 tile = gridColumn[j];
                 if(tile) {
-                    jPlusOne = j + 1;
-                    jPlusTwo = j + 2;
-                    // If there's an empty space below the tile,
-                    // set the tile to that new space
-                    if(board.isWithinBounds(i, jPlusOne) && gridColumn[jPlusOne] == null) {
-                        gridColumn[j] = null;
-                        gridColumn[j + 1] = tile;
-                    }
-
-                    // If the tile's py doesn't match it's grid position,
-                    // cause the tile to fall
-                    if(Math.floor(tile.y / board.tileHeight) != j) {
-                        tile.y += Math.min(fallSpeed, (board.tileHeight * j) - tile.y);
-                        enableInput = false;
-                        cascadingFlag = true;
-                    }
-
-                    if(tile.clearCount > 0) {
-                        if(--tile.clearCount == 0) {
-                            tile.cleared = true;
+                    if(this.isCascading) {
+                        jPlusOne = j + 1;
+                        jPlusTwo = j + 2;
+                        // If there's an empty space below the tile,
+                        // set the tile to that new space
+                        if(board.isWithinBounds(i, jPlusOne) && gridColumn[jPlusOne] == null) {
+                            gridColumn[j] = null;
+                            gridColumn[j + 1] = tile;
+                            cascadingFlag = true;
                         }
-                        clearingFlag = true;
+
+                        // If the tile's py doesn't match its grid position,
+                        // cause the tile to fall
+                        if(Math.floor(tile.y / board.tileHeight) != j) {
+                            tile.y += Math.min(fallSpeed, (board.tileHeight * j) - tile.y);
+                            enableInput = false;
+                            cascadingFlag = true;
+                        }
+
+                    } else if(this.isClearing) {
+                        if(tile.clearCount > 0) {
+                            clearingFlag = true;
+                            if(--tile.clearCount == 0) {
+                                tile.cleared = true;
+                                tilesToRemove.push(tile);
+                            }
+                        }
                     }
                 }
             }
         }
 
-        this.inputManager.enableInput(enableInput);
-
-        // Check if clearing is done. If it is, remove
-        // the cleared tiles
-        if(this.isClearing && clearingFlag == false) {
-            this.isClearing = false;
-            this.removeTiles();
-        }
-
-        // See if cascading is done. If it is, fill in
+        // If we're cascading, check if it's done. If it is, fill in
         // the upper board.
-        if(this.isCascading && cascadingFlag == false) {
+        if(this.isCascading && cascadingFlag === false) {
             this.isCascading = false;
             this.createUpperTiles();
+            this.inputManager.enableInput(true);
+        }
+
+        // If we're clearing, remove cleared tiles or initiate cascading
+        // if we're done clearing.
+        if(this.isClearing) {
+            if(tilesToRemove.length > 0) {
+                this.removeTiles(tilesToRemove);
+
+            } else if(clearingFlag === false) {
+                this.isClearing = false;
+                this.isCascading = true;
+            }
         }
     },
 
@@ -417,7 +451,7 @@ EARTH.gameManager = {
             score = this.score;
 
         if((board.selectedTiles.length == board.selectCount && board.selectCount >= board.SELECTION_LENGTH) || board.selectCount > 2) {
-            this.isCascading = true;
+            //this.isCascading = true;
 
             this.destroyTiles(board.selectedTiles);
             ///dispatchPointEvent(true);
@@ -438,58 +472,43 @@ EARTH.gameManager = {
         }
     },
 
+    // Mark tiles to clear themselves
     destroyTiles: function(tileSet) {
         var score = this.score;
 
-        this.tileSet = tileSet;
+        //this.tileSet = tileSet;
         this.inputManager.enableInput(false);
 
         if(!this.disableClearBonus && score.bonusStonesEnabled) {
             this.bonus = score.checkForBonus(tileSet.length);
         }
 
+
         for(var i = 0; i < tileSet.length; i++) {
-            //tileSet[i].clearing = true;
             tileSet[i].clearCount = this.board.MAX_CLEAR_COUNT;
-            this.isClearing = true;
         }
 
-        //glowTimer = new Timer(400, 1);
-        //glowTimer.addEventListener(TimerEvent.TIMER_COMPLETE, removeTiles);
-        //glowTimer.start();
-
         //this.removeTiles();
-        ///this.board.clearCount = 0;
 
         ///clearSound.play();
+
+        ///this.isCascading = true;
+        this.isClearing = true;
+        tileSet.length = 0;
+
         this.audioManager.playClear();
     },
 
-    removeTiles: function() {
+    // Remove tiles from the board
+    removeTiles: function(tiles) {
         var board = this.board,
             tileFactory = this.tileFactory,
-            tileSet = this.tileSet,
             tileWasRemoved = false,
             tile;
 
-        //glowTimer.stop();
-        //glowTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, removeTiles);
-
-        for(var i = 0; i < tileSet.length; i++) {
-            tile = tileSet[i];
-            //if(this.boardContainer.contains(tile)) {
-            //    if(tile.getSparkHalo()) {
-            //        tile.setSparkHalo(false);
-            //        tile.applyHalo();
-            //        tile.removeEventListener(MouseEvent.CLICK, onSparkClick);
-            //    } else if(tile.getMorpherHalo()) {
-            //        tile.setMorpherHalo(false);
-            //        tile.applyHalo();
-            //        tile.removeEventListener(MouseEvent.CLICK, doMorpher);
-            //    }
-            //    this.boardContainer.removeElement(tile);
-                tileWasRemoved = true;
-            //}
+        for(var i = 0; i < tiles.length; i++) {
+            tile = tiles[i];
+            tileWasRemoved = true;
 
             // Remove the tile from the board
             board.removeTile(tile);
@@ -498,7 +517,7 @@ EARTH.gameManager = {
             tileFactory.freeTile(tile);
         }
 
-        if(!this.disableClearBonus && tileSet.length > 0) {
+        if(!this.disableClearBonus && tiles.length > 0) {
            // TODO: figure out if this is even needed
         }
 
@@ -510,7 +529,7 @@ EARTH.gameManager = {
             this.inputManager.enableInput(true);
         }*/
 
-        tileSet.length = 0;
+        tiles.length = 0;
     },
 
     resetValues: function() {
