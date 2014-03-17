@@ -6,11 +6,11 @@
 
 EARTH.audioManager = {
     init: function(sounds, ready) {
-        this.currentChime   = -1;
+        //this.currentChime   = -1;
         this.sounds         = sounds;
         this.gameSfx        = sounds.sounds["gameSfx"];
 
-        this.chimes         = [
+        /*this.chimes         = [
             {start: 0.0,    end: 0.65}, //.81
             {start: 0.85,   end: 1.40}, //1.64
             {start: 1.65,   end: 2.30}, //2.46
@@ -21,11 +21,15 @@ EARTH.audioManager = {
             {start: 7.7,    end: 8.35}, //8.47
             {start: 8.5,    end: 9.15}, //9.30
             {start: 9.35,   end: 10.13}
-        ];
+        ];*/
 
-        this.clear = {start: 10.15, end: 11.01};
+        this.segments = {
+            clear: {start: 0.1, end: 0.8},
+            sparkAppear: {start: 1.0, end: 1.395},
+            sparkActive: {start: 2.013, end: 2.980}
+        };
 
-        this.enableAudioPlayers($("#enableAudioButton").get(0), [this.gameSfx], ready);
+        this.enableAudioPlayers($("#playButton").get(0), [this.gameSfx], ready);
     },
 
     onPlay: function(e) {
@@ -38,17 +42,30 @@ EARTH.audioManager = {
     },
 
     playClear: function() {
+        this.playSegment(this.segments.clear);
+    },
+
+    playSparkAppear: function() {
+        this.playSegment(this.segments.sparkAppear);
+    },
+
+    playSparkActive: function() {
+        this.playSegment(this.segments.sparkActive);
+    },
+
+    playSegment: function(segment) {
         var gameSfx = this.gameSfx;
 
-        gameSfx.currentTime = this.clear.start;
-        this.end = this.clear.end;
+        gameSfx.currentTime = segment.start;
+        this.end = segment.end;
 
         if(gameSfx.paused) {
             gameSfx.play();
         }
     },
 
-    playNextChime: function() {
+
+    /*playNextChime: function() {
         var gameSfx = this.gameSfx,
             chimes = this.chimes,
             currentChime = this.currentChime + 1;
@@ -82,11 +99,11 @@ EARTH.audioManager = {
             gameSfx.play();
 
         this.currentChime = currentChime;
-    },
+    },*/
 
-    resetChime: function() {
+    /*resetChime: function() {
         this.currentChime = -1;
-    },
+    },*/
 
     // This supposedly enables audio on an HTML audio element on iOS...
     // http://blog.gopherwoodstudios.com/2012/07/enabling-html5-audio-playback-on-ios.html
@@ -130,6 +147,9 @@ EARTH.audioManager = {
                     };*/
                 }
             }
+
+            $("#gameOverlay").fadeOut();
+            $("#gameDisplay").fadeIn();
         };
         element.addEventListener('click', click, false);
         //element.addEventListener('click', click, false);

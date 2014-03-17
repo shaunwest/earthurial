@@ -7,5 +7,5 @@
 EARTH.time = {
     targetFps: 60,
     fps: 0,
-    timerCount: 61
+    timerCount: 11
 };

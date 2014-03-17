@@ -43,5 +43,9 @@ EARTH.def = function(arg, defaultValue) {
 };
 
 EARTH.log = function(message) {
-    console.log(message);
+    console.debug(message);
+};
+
+EARTH.numberWithCommas = function(x) {
+    return x.toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",");
 };

@@ -22,7 +22,7 @@ EARTH.hudView = {
             timer = this.timeModel.timerCount;
 
         if(totalScore != this.lastScore) {
-            this.$scoreEl.text(totalScore);
+            this.$scoreEl.text(EARTH.numberWithCommas(totalScore));
             this.lastScore = totalScore;
         }
 
@@ -32,7 +32,7 @@ EARTH.hudView = {
         }
 
         if(tempPoints != this.lastPoints) {
-            this.$pointsEl.text(tempPoints);
+            this.$pointsEl.text(EARTH.numberWithCommas(tempPoints));
             this.lastPoints = tempPoints;
         }
     }

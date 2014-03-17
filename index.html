@@ -21,10 +21,9 @@
             <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
         <![endif]-->
 
-        <div id="audioPlayerContainer">
-            <!--<audio id="audioPlayer"></audio>-->
+        <!--<div id="audioPlayerContainer">
             <div id="enableAudioButton">Enable Audio</div>
-        </div>
+        </div>-->
 
         <div class="header-container">
             <header class="wrapper clearfix">
@@ -60,6 +59,13 @@
                     <div id="gameContainer">
                         <canvas id="gameDisplay" width="600" height="1200"></canvas>
                         <div id="fps"></div>
+                        <div id="gameOverlay">
+                          <div id="playButton">Play</div>
+                        </div>
+                        <div id="gameOverlay2">
+                          <div>Game Over!</div>
+                          <div class="playAgainButton">Play Again</div>
+                        </div>
                     </div>
                     <div class="stonesContainer">
                         <div class="redStone stoneSprite"></div>
@@ -108,7 +114,7 @@
         <script src="js/earthurial/managers/timeManager.js"></script>
         <script src="js/earthurial/managers/inputManager.js"></script>
         <script src="js/earthurial/managers/gameManager.js"></script>
-        <script src="js/earthurial/other/frameQueue.js"></script>
+        <script src="js/earthurial/other/gameQueue.js"></script>
         <script src="js/earthurial/views/boardView.js"></script>
         <script src="js/earthurial/views/stonesView.js"></script>
         <script src="js/earthurial/views/hudView.js"></script>
