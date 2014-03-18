@@ -1,0 +1,14 @@
+{
+  "title": "Earthurial",
+  "name": "earthurial",
+  "version": "0.0.1",
+  "author": {
+    "name": "Shaun West",
+    "twitter": "@shaunwest",
+    "company": "Whipjack Studios"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.4",
+    "grunt-contrib-compass": "~0.7.2"
+  }
+}

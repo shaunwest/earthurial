@@ -1,0 +1,9 @@
+@import "../modules/all";
+
+
+body, html {
+  color: $secondaryColor;
+  background-color: $primaryBackgroundColor;
+  height: 100%;
+  margin: 0;
+}
