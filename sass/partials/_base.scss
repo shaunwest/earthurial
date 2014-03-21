@@ -1,5 +1,7 @@
+@import "singularitygs";
 @import "../modules/all";
 
+@include grid-toggle;
 
 body, html {
   color: $secondaryColor;
@@ -7,3 +9,41 @@ body, html {
   height: 100%;
   margin: 0;
 }
+
+div.wrapper {
+  width: 600px;
+  height: 100%;
+  margin: 0 auto;
+}
+
+header.siteHeader {
+  @include grid-span(8, 2);
+  clear: both;
+
+  a.title h1 {
+    background: url("../img/title.png") no-repeat top left;
+    background-size: contain;
+    width: 500px;
+    height: 70px;
+  }
+}
+
+footer {
+  @include grid-span(3, 8);
+  clear: both;
+  height: 50px;
+
+  img {
+    padding-top: 10px;
+    float: right;
+  }
+}
+
+.ir span {
+  display: block;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+

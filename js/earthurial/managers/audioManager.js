@@ -29,7 +29,7 @@ EARTH.audioManager = {
             sparkActive: {start: 2.013, end: 2.980}
         };
 
-        this.enableAudioPlayers($("#playButton").get(0), [this.gameSfx], ready);
+        this.enableAudioPlayers($(".gameOverlay").get(0), [this.gameSfx], ready);
     },
 
     onPlay: function(e) {
@@ -148,8 +148,8 @@ EARTH.audioManager = {
                 }
             }
 
-            $("#gameOverlay").fadeOut();
-            $("#gameDisplay").fadeIn();
+            $(".gameOverlay").fadeOut();
+            $(".gameDisplay").fadeIn();
         };
         element.addEventListener('click', click, false);
         //element.addEventListener('click', click, false);

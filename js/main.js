@@ -3,11 +3,11 @@ $(document).ready(function() {
   var config      = EARTH.config,
 
     // Models
-    board       = EARTH.board,
-    score       = EARTH.score,
+    board         = EARTH.board,
+    score         = EARTH.score,
     tileSheets    = EARTH.tileSheets,
-    sounds      = EARTH.sounds,
-    time      = EARTH.time,
+    sounds        = EARTH.sounds,
+    time          = EARTH.time,
 
     // Managers
     assetManager  = EARTH.assetManager,
@@ -19,22 +19,22 @@ $(document).ready(function() {
     // Views
     boardView     = EARTH.boardView,
     stonesView    = EARTH.stonesView,
-    hudView     = EARTH.hudView,
+    hudView       = EARTH.hudView,
 
     // Factories
     tileFactory   = EARTH.tileFactory,
 
     // Other
-    $canvas     = $("#gameDisplay"),
-    canvas      = $canvas.get(0),
-    $fps      = $("#fps"),
-    $debug      = $("#debug");
-    $playAgain = $(".playAgainButton");
+    $canvas       = $(".gameDisplay"),
+    canvas        = $canvas.get(0),
+    $fps          = $(".fps"),
+    $debug        = $(".debug");
+    $playAgain    = $(".gameOverlay2");
 
 
   // Init config values
   board.boardWidth      = config.boardWidth;
-  board.boardHeight       = config.boardHeight;
+  board.boardHeight     = config.boardHeight;
   board.tileWidth       = config.tileWidth;
   board.tileHeight      = config.tileHeight;
 
@@ -75,13 +75,13 @@ $(document).ready(function() {
       // Handles sfx
       audioManager.init(sounds, function() {
         $playAgain.on('click', function() {
-          time.timerCount = 11;
+          time.timerCount = 61;
           score.totalScore = 0;
           // TODO: other stats need to be cleared... probably should reset ALL models here
           startGame();
 
-          $("#gameOverlay2").fadeOut();
-          $("#gameDisplay").fadeIn();
+          $(".gameOverlay2").fadeOut();
+          $(".gameDisplay").fadeIn();
         });
 
         startGame();
@@ -137,8 +137,8 @@ $(document).ready(function() {
 
     if(time.timerCount === 0) {
       timeManager.stop();
-      $("#gameOverlay2").fadeIn();
-      $("#gameDisplay").fadeOut();
+      $(".gameOverlay2").fadeIn();
+      $(".gameDisplay").fadeOut();
     }
   }
 });

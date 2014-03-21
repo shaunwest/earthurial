@@ -8,13 +8,15 @@ module.exports = function(grunt) {
         options: {
           sassDir: 'sass',
           cssDir: 'css',
-          watch: true
+          watch: true,
+          require: 'singularitygs'
         }
       },
       build: {
         options: {
           sassDir: 'sass',
-          cssDir: 'css'
+          cssDir: 'css',
+          require: 'singularitygs'
         }
       }
     }
